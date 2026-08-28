@@ -1,0 +1,9 @@
+node_modules
+.next
+data
+.catalog-cache
+public/search-index.json
+public/logo-light.svg
+public/mark-light.svg
+tsconfig.tsbuildinfo
+next-env.d.ts
