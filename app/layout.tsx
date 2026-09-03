@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     `Put your logo on it. Embroidery, screen print, direct-to-garment, dye sublimation and heat transfer on ${catalogSize.toLocaleString()} blank garments and bags. Send artwork, get a quote.`,
   icons: { icon: "/mark.svg" },
   openGraph: {
-    title: "BlueThreadz: Build Your Brand In Style",
+    title: "BlueThreadz: Build your brand in style",
     description:
       "Custom embroidery and printing on apparel, caps and bags. Design it on screen, then send it over for a quote.",
     type: "website",

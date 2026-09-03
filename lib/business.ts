@@ -5,7 +5,7 @@
 
 export const business = {
   name: "BlueThreadz",
-  tagline: "Build Your Brand In Style",
+  tagline: "Build your brand in style",
 
   // --- Confirmed ---
   shopUrl: "https://bluethreadz.com",
