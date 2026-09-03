@@ -53,7 +53,7 @@ export default function Home() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="lockup__mark" src="/logo.svg" alt="BlueThreadz" width={366} height={46} />
               <span className="lockup__rule" aria-hidden="true" />
-              <span className="lockup__tag">&ldquo;Promotional Excellence&rdquo;</span>
+              <span className="lockup__tag">&ldquo;{business.tagline}&rdquo;</span>
             </div>
             <h1 className="display">
               Put your logo <em>on it.</em>
