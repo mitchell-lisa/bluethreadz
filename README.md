@@ -30,3 +30,9 @@ do not re-hit the network. Delete `.catalog-cache/` to force a fresh pull.
 - `components/` — header, footer, search overlay, product card, buy box, mockup studio, quote form
 - `lib/` — catalog access helpers and business constants
 - `public/` — logo and mark assets
+
+## Deployment
+
+The site is hosted on Vercel as the `bluethreadz` project and served at `bluethreadz.vercel.app`.
+Deploys run `npm run build`, so the `prebuild` catalog fetch happens on every build and
+`data/catalog.json` is never committed.
