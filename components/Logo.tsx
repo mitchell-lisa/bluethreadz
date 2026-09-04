@@ -1,16 +1,17 @@
 /**
- * The BlueThreadz wordmark, cleaned from the supplied artwork (tagline and background removed,
- * upscaled and re-edged). `light` inverts it for navy backgrounds while keeping the spool blue.
+ * The BlueThreadz wordmark, taken from the brand artwork with the background removed and the
+ * decoration-method strip cropped off — the methods are set as live text where they are needed.
+ * `light` swaps in the white version for navy backgrounds rather than filtering the navy one.
  */
 export function Logo({ className = "", light = false }: { className?: string; light?: boolean }) {
   return (
     <img
-      src="/logo.png"
+      src={light ? "/logo-light.png" : "/logo.png"}
       alt="Blue Threadz"
-      width={817}
-      height={101}
+      width={2058}
+      height={272}
       decoding="async"
-      className={`w-auto ${light ? "invert hue-rotate-180 brightness-110" : ""} ${className}`}
+      className={`w-auto ${className}`}
     />
   );
 }

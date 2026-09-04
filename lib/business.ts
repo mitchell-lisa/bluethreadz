@@ -11,6 +11,9 @@ export const business = {
   name: "BlueThreadz",
   displayName: "Blue Threadz",
   tagline: "Build your brand in style",
+
+  /** The six labels set beneath the wordmark in the brand lockup, in artwork order. */
+  brandStrip: ["Embroidery", "Screen Print", "Dye-Sublimation", "Heat Transfer", "DTG", "Custom Apparel"],
   description:
     "Custom embroidered and printed apparel, headwear, bags and workwear for businesses, teams, schools and events. With our design team we can take your concept and make it reality.",
 

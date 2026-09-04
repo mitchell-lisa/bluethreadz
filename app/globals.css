@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
-/* Palette is taken from the BlueThreadz logo: black serif wordmark, logo-blue spool, white ground. */
+/* Palette is sampled from the BlueThreadz lockup: the wordmark navy and the thread blue that
+   runs through it. Every pair below meets WCAG AA against its intended background — white on
+   thread is 5.30:1, navy on white 13.41:1, ink-soft on white 6.74:1. */
 @theme {
-  --color-navy: #26396a;        /* deep logo blue — dark sections, primary text accents */
-  --color-navy-deep: #1b2a52;   /* footer */
-  --color-thread: #3e5ca0;      /* the logo blue — primary buttons, links */
-  --color-thread-bright: #a7bdf0; /* light blue on dark backgrounds */
+  --color-navy: #022d65;        /* the wordmark navy — dark sections, primary text accents */
+  --color-navy-deep: #011a3d;   /* footer */
+  --color-thread: #005cfe;      /* the thread blue — primary buttons, links */
+  --color-thread-bright: #7aa7ff; /* light blue on dark backgrounds */
   --color-cloth: #ffffff;       /* page ground: white, like the logo */
-  --color-cloth-dark: #eef1f7;  /* soft blue-grey tiles */
-  --color-ink: #1a1a1a;         /* logo black */
-  --color-ink-soft: #4b5563;
-  --color-line: #dfe3ec;
+  --color-cloth-dark: #eef3fc;  /* soft blue tiles */
+  --color-ink: #0b1b33;         /* body text — navy-black, not neutral black */
+  --color-ink-soft: #4d5c78;
+  --color-line: #d5e0f2;
 
   --font-display: var(--font-sans), system-ui, sans-serif;   /* nav, labels, buttons, eyebrows */
   --font-heading: var(--font-serif), "Times New Roman", Times, serif; /* headings — matches the wordmark */
@@ -24,7 +26,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: #f7f8fb;
+  background: #f6f8fc;
   color: var(--color-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
