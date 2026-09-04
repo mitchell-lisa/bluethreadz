@@ -1,112 +1,152 @@
 /**
- * Verified facts only. Anything not confirmed by the owner stays `null`, and
- * every component that reads a `null` renders nothing rather than guessing.
+ * BlueThreadz — single source of truth for every business fact on the site.
+ *
+ * RULE: if a fact is not verified, it is `null` and the site renders nothing for it.
+ * Do not guess. Fill in from the owner and the site updates everywhere.
  */
+
+export type Hours = { day: string; open: string; close: string } | { day: string; closed: true };
 
 export const business = {
   name: "BlueThreadz",
-  tagline: "Build Your Brand In Style",
+  displayName: "Blue Threadz",
+  tagline: "Build your brand in style",
 
-  // --- Confirmed ---
-  shopUrl: "https://bluethreadz.com",
-  instagram: "https://www.instagram.com/bluethreadz/",
+  /** The six labels set beneath the wordmark in the brand lockup, in artwork order. */
+  brandStrip: ["Embroidery", "Screen Print", "Dye-Sublimation", "Heat Transfer", "DTG", "Custom Apparel"],
+  description:
+    "Custom embroidered and printed apparel, headwear, bags and workwear for businesses, teams, schools and events. With our design team we can take your concept and make it reality.",
 
-  // --- Awaiting owner ---
-  phone: null as string | null,
-  email: null as string | null,
+  // ---- Contact (VERIFY WITH OWNER — null renders nothing) ----
+  phone: null as string | null, // E.164, e.g. "+18565550100"
+  phoneDisplay: null as string | null, // e.g. "(856) 555-0100"
+  email: null as string | null, // e.g. "orders@bluethreadz.com"
+  address: null as null | {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    mapsUrl: string;
+  },
+  hours: null as Hours[] | null,
+  serviceArea: null as string[] | null, // e.g. ["South Jersey", "Philadelphia"]
+  yearEstablished: null as number | null,
+
+  // ---- Online ----
+  website: "https://bluethreadz.com",
+  shopUrl: "https://bluethreadz.com/collections/all",
+  social: {
+    instagram: "https://www.instagram.com/bluethreadz",
+    facebook: null as string | null,
+  },
+
+  // ---- Decoration methods (verified: listed on current site) ----
+  methods: [
+    {
+      name: "Embroidery",
+      blurb:
+        "Stitched logos and lettering on polos, hats, jackets and bags. The most durable, most professional finish for uniforms and corporate wear.",
+      bestFor: "Polos · Hats · Jackets · Bags",
+    },
+    {
+      name: "Screen Printing",
+      blurb:
+        "Bold, long-lasting ink for tees, hoodies and event shirts. The right choice for larger runs and simple, high-impact artwork.",
+      bestFor: "Tees · Hoodies · Team runs",
+    },
+    {
+      name: "Dye-Sublimation",
+      blurb:
+        "Full-color, edge-to-edge designs fused into performance fabric. No cracking, no peeling, no texture.",
+      bestFor: "Performance wear · All-over prints",
+    },
+    {
+      name: "Heat Transfer",
+      blurb:
+        "Names, numbers and crisp graphics applied one at a time. Ideal for rosters, small batches and mixed sizes.",
+      bestFor: "Names & numbers · Small batches",
+    },
+    {
+      name: "DTG (Direct-to-Garment)",
+      blurb:
+        "Photographic, full-color detail printed directly onto the garment. Great for complex artwork and short runs.",
+      bestFor: "Detailed art · Short runs",
+    },
+  ],
+
+  // ---- Who they serve (derived from product mix + public Instagram work) ----
+  audiences: [
+    { name: "Businesses & Uniforms", blurb: "Polos, workwear and outerwear with your logo, ready for the crew." },
+    { name: "Teams & Clubs", blurb: "Practice tees, hoodies, caps and bags for sports teams and leagues." },
+    { name: "Schools & Spirit Wear", blurb: "Youth and adult sizes, staff shirts and fundraiser-ready runs." },
+    { name: "Events & Groups", blurb: "Trips, reunions, bachelorette parties, fundraisers and one-off celebrations." },
+    { name: "High-Visibility & Safety", blurb: "ANSI-rated vests, tees and jackets printed with your company name." },
+  ],
+
+  // ---- Product categories (verified: current site navigation) ----
+  categories: [
+    { name: "T-Shirts", href: "https://bluethreadz.com/collections/tees" },
+    { name: "Hoodies", href: "https://bluethreadz.com/collections/hooded-sweatshirts" },
+    { name: "¼ & ½ Zips", href: "https://bluethreadz.com/collections/1-4-zips" },
+    { name: "Polos & Knits", href: "https://bluethreadz.com/collections/polos-knits" },
+    { name: "Hats & Beanies", href: "https://bluethreadz.com/collections/hats-beanies" },
+    { name: "Bags, Backpacks & Coolers", href: "https://bluethreadz.com/collections/duffel-bags-backpacks" },
+    { name: "High-Visibility & Workwear", href: "https://bluethreadz.com/collections/high-visibility-workwear" },
+    { name: "Women's", href: "https://bluethreadz.com/collections/ladies" },
+    { name: "Youth", href: "https://bluethreadz.com/collections/youth" },
+  ],
+
+  // ---- Brands stocked (verified: current site "Shop Brands" menu) ----
+  brands: [
+    "Nike",
+    "Carhartt",
+    "The North Face",
+    "Eddie Bauer",
+    "Champion",
+    "New Era",
+    "TravisMathew",
+    "OGIO",
+    "Port Authority",
+    "Sport-Tek",
+    "BELLA+CANVAS",
+    "American Apparel",
+    "Next Level",
+    "Gildan",
+    "Hanes",
+    "District",
+    "CornerStone",
+    "Mercer+Mettle",
+    "Port & Company",
+    "A4",
+  ],
+
+  // ---- Gallery (placeholders until owner supplies photos) ----
+  // Replace `src` with real photos in /public/work/. Keep alt honest.
+  gallery: [
+    { src: null, alt: "Embroidered polos for a local business", label: "Embroidered polos", placeholder: true },
+    { src: null, alt: "Screen-printed team hoodies", label: "Team hoodies", placeholder: true },
+    { src: null, alt: "Custom caps for a group trip", label: "Custom caps", placeholder: true },
+    { src: null, alt: "High-visibility workwear with company logo", label: "Hi-vis workwear", placeholder: true },
+    { src: null, alt: "Embroidered duffel bags", label: "Embroidered bags", placeholder: true },
+    { src: null, alt: "Dye-sublimated performance shirts", label: "Performance wear", placeholder: true },
+  ],
+
+  // ---- Motion (the shop's own cross-stitch GIFs). Paste public URLs; null falls back to the SVG rebuild. ----
+  media: {
+    stitchBlue: "https://i.pinimg.com/originals/0a/bf/20/0abf2007e1a6fdbb58d5e0ed85744e9f.gif" as string | null, // hero
+    stitchMulti: "https://i.pinimg.com/originals/68/2a/ee/682aeef9a5073baad880d017857e71ad.gif" as string | null, // quote section
+  },
+
+  // ---- Quote form ----
+  // Until an email provider is connected, the form composes an email to `quoteTo`.
+  // Set quoteTo to the shop's real email. If null, the form falls back to Instagram DM.
   quoteTo: null as string | null,
-  address: null as { street: string; city: string; state: string; zip: string } | null,
-  hours: null as { day: string; open: string; close: string }[] | null,
-  yearFounded: null as number | null,
-  serviceArea: null as string[] | null,
-};
 
-export const methods = [
-  {
-    slug: "embroidery",
-    name: "Embroidery",
-    blurb:
-      "Your logo stitched into the fabric with thread. It does not crack, peel or wash out, and it reads as the most finished of the options.",
-    best: "Polos · caps · jackets · bags",
+  seo: {
+    title: "BlueThreadz — Build your brand in style | Custom Embroidery & Printing",
+    description:
+      "Custom embroidered and printed apparel, hats, bags and workwear for businesses, teams, schools and events. Embroidery, screen print, dye-sublimation, heat transfer and DTG. Request a free quote.",
   },
-  {
-    slug: "screen-print",
-    name: "Screen print",
-    blurb:
-      "Ink pushed through a mesh screen, one screen per colour. The cost per piece drops as the run grows, which makes it the workhorse for bigger orders.",
-    best: "Tees · hoodies · event runs",
-  },
-  {
-    slug: "dtg",
-    name: "Direct to garment",
-    blurb:
-      "Ink printed straight onto the shirt like a photo print. No screens to set up, so full-colour artwork and small counts stop being a problem.",
-    best: "Full-colour art · short runs",
-  },
-  {
-    slug: "dye-sublimation",
-    name: "Dye sublimation",
-    blurb:
-      "The design is turned into a gas that dyes the fibres themselves. Edge-to-edge colour with nothing sitting on top of the fabric to feel.",
-    best: "Jerseys · all-over prints",
-  },
-  {
-    slug: "heat-transfer",
-    name: "Heat transfer",
-    blurb:
-      "Cut or printed film pressed onto the garment. It handles names and numbers cleanly, so a roster of one-offs is straightforward.",
-    best: "Names · numbers · one-offs",
-  },
-] as const;
+} as const;
 
-export const audiences = [
-  { name: "Small business", note: "Uniforms and everyday branded gear" },
-  { name: "Teams & leagues", note: "Jerseys, warmups, names and numbers" },
-  { name: "Schools & clubs", note: "Spirit wear and group orders" },
-  { name: "Events", note: "Staff shirts, giveaways, merch" },
-  { name: "Trades & crews", note: "Workwear and high-visibility" },
-  { name: "Non-profits", note: "Fundraiser and volunteer apparel" },
-];
-
-export const steps = [
-  {
-    title: "Send your artwork",
-    body: "Start a quote with what you have: a logo file, a sketch, or a photo of an old shirt. Tell us the garment, the rough count and when you need it.",
-  },
-  {
-    title: "We come back with a quote",
-    body: "We confirm the decoration method that suits the artwork and the garment, and price the run against the count you gave us.",
-  },
-  {
-    title: "You approve a proof",
-    body: "Nothing goes on a garment until you have seen the placement and size and said yes.",
-  },
-  {
-    title: "We decorate and hand it over",
-    body: "Your order is produced and packed. Reorders run off the same approved file.",
-  },
-];
-
-/** Thread colours for the accent picker. Named the way a thread chart is. */
-export const threads = [
-  { name: "Athletic Gold", hex: "#f2a900", ink: "#14161c" },
-  { name: "Scarlet", hex: "#c8102e", ink: "#ffffff" },
-  { name: "Kelly", hex: "#007a33", ink: "#ffffff" },
-  { name: "Royal", hex: "#1d4f91", ink: "#ffffff" },
-  { name: "Purple", hex: "#582c83", ink: "#ffffff" },
-  { name: "Orange", hex: "#ff6a13", ink: "#14161c" },
-  { name: "Teal", hex: "#007c91", ink: "#ffffff" },
-  { name: "Silver", hex: "#9ea2a2", ink: "#14161c" },
-  { name: "White", hex: "#ffffff", ink: "#14161c" },
-  { name: "Black", hex: "#14161c", ink: "#ffffff" },
-] as const;
-
-export const placements = [
-  "Left chest",
-  "Full front",
-  "Full back",
-  "Left sleeve",
-  "Right sleeve",
-  "Cap front",
-  "Nape / collar",
-] as const;
+export type Business = typeof business;

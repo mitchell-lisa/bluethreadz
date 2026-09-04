@@ -1,95 +1,95 @@
-import raw from "@/data/catalog.json";
-
-export type Variant = {
-  id: number;
-  title: string;
-  available: boolean;
-  price: string;
-  o1: string | null;
-  o2: string | null;
-  o3: string | null;
-  img: string | null;
-};
+import catalog from "@/data/catalog.json";
 
 export type Product = {
   handle: string;
   slug: string;
   title: string;
   vendor: string;
-  type: string;
+  brandSlug: string;
+  style: string | null;
+  categories: string[];
   tags: string[];
+  minPrice: number | null;
+  image: string;
   images: string[];
   colors: { name: string; image: string | null }[];
   sizes: string[];
-  optionNames: string[];
-  variants: Variant[];
+  /** [variantId, color|null, size|null, price, available] */
+  variants: [number, string | null, string | null, number, boolean][];
+  intro: string;
+  features: string[];
+  shopifyUrl: string;
 };
 
-export type Collection = { handle: string; title: string; count: number };
+export type Collection = { slug: string; name: string; count: number };
+export type Brand = { name: string; slug: string; count: number };
 
-type Catalog = {
-  fetchedAt: string;
+const data = catalog as unknown as {
   products: Product[];
-  categories: Collection[];
-  brands: Collection[];
+  collections: Collection[];
+  brands: Brand[];
   featured: string[];
-  membership: Record<string, string[]>;
+  fetchedAt: string;
 };
 
-const catalog = raw as unknown as Catalog;
+export const products = data.products;
+export const collections = data.collections;
+export const brands = data.brands;
+export const featured = (data.featured ?? []).map((h) => products.find((p) => p.handle === h)).filter(Boolean) as Product[];
 
-export const products = catalog.products;
-export const categories = catalog.categories;
-export const brands = catalog.brands;
-export const membership = catalog.membership;
-
-const bySlug = new Map(products.map((p) => [p.slug, p]));
-const byHandle = new Map(products.map((p) => [p.handle, p]));
-
-/** Accepts either the URL slug or the raw Shopify handle. */
-export function getProduct(key: string) {
-  return bySlug.get(key) ?? byHandle.get(key) ?? null;
-}
-
-export function productsIn(collectionHandle: string): Product[] {
-  const handles = membership[collectionHandle] ?? [];
-  return handles.map((h) => byHandle.get(h)).filter(Boolean) as Product[];
-}
-
-export function featured(limit = 8): Product[] {
-  const picked = catalog.featured
-    .map((h) => byHandle.get(h))
-    .filter((p): p is Product => Boolean(p) && (p as Product).images.length > 0);
-  return picked.slice(0, limit);
-}
-
-export function collectionOf(handle: string): Collection | null {
-  return (
-    categories.find((c) => c.handle === handle) ??
-    brands.find((c) => c.handle === handle) ??
-    null
-  );
-}
-
-/** Cleans up the long supplier-style titles for display. */
-export function displayTitle(p: Product) {
-  return p.title.replace(/\s*®\s*/g, "\u00ae ").replace(/\s+/g, " ").trim();
-}
-
-/** Slim payload handed to client components (search, studio). */
-export type LiteProduct = {
-  h: string;
-  t: string;
-  v: string;
-  img: string;
+/** Lightweight shape for grids — keeps category pages small. */
+export type ProductCard = Pick<Product, "handle" | "slug" | "title" | "vendor" | "brandSlug" | "style" | "minPrice" | "image"> & {
+  colorCount: number;
 };
 
-export function liteIndex(): LiteProduct[] {
-  return products
-    .filter((p) => p.images.length > 0)
-    .map((p) => ({ h: p.slug, t: displayTitle(p), v: p.vendor, img: p.images[0] }));
+export function toCard(p: Product): ProductCard {
+  return {
+    handle: p.handle,
+    slug: p.slug,
+    title: p.title,
+    vendor: p.vendor,
+    brandSlug: p.brandSlug,
+    style: p.style,
+    minPrice: p.minPrice,
+    image: p.image,
+    colorCount: p.colors.length,
+  };
 }
 
-export const catalogSize = products.length;
-export const brandCount = brands.length;
-export const categoryCount = categories.length;
+export function getProduct(slug: string) {
+  return products.find((p) => p.slug === slug) ?? null;
+}
+export function getCollection(slug: string) {
+  return collections.find((c) => c.slug === slug) ?? null;
+}
+export function getBrand(slug: string) {
+  return brands.find((b) => b.slug === slug) ?? null;
+}
+export function productsInCollection(slug: string) {
+  return products.filter((p) => p.categories.includes(slug));
+}
+export function productsByBrand(slug: string) {
+  return products.filter((p) => p.brandSlug === slug);
+}
+
+/** Shopify CDN resize: insert `_600x` etc. before the file extension. */
+export function img(src: string, width: number) {
+  return src.replace(/(\.[a-z]+)(\?|$)/i, `_${width}x$1$2`);
+}
+
+export function money(n: number | null) {
+  if (n == null) return null;
+  return n % 1 === 0 ? `$${n}` : `$${n.toFixed(2)}`;
+}
+
+export function categoryNames(p: Product) {
+  return p.categories.map((s) => getCollection(s)?.name).filter(Boolean) as string[];
+}
+
+/** Prefer a flat-lay / product-only photo over a model shot, when the supplier provides one. */
+export function flatImage(p: Product) {
+  return p.images.find((i) => /flat|_hat_|_bag_|detail/i.test(i)) ?? p.images.find((i) => !/model/i.test(i)) ?? p.image;
+}
+export function hasFlatImage(p: Product) {
+  return p.images.some((i) => /flat|_hat_|_bag_|detail/i.test(i));
+}

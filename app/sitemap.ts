@@ -1,17 +1,16 @@
 import type { MetadataRoute } from "next";
-import { products, categories, brands } from "@/lib/catalog";
-
-const BASE = "https://bluethreadz.vercel.app";
+import { business } from "@/lib/business";
+import { brands, collections, products } from "@/lib/catalog";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const base = business.website;
   const now = new Date();
   return [
-    { url: BASE, lastModified: now, priority: 1 },
-    { url: `${BASE}/quote`, lastModified: now, priority: 0.9 },
-    { url: `${BASE}/products`, lastModified: now, priority: 0.8 },
-    { url: `${BASE}/how-it-works`, lastModified: now, priority: 0.7 },
-    ...categories.map((c) => ({ url: `${BASE}/products/c/${c.handle}`, lastModified: now, priority: 0.6 })),
-    ...brands.map((b) => ({ url: `${BASE}/products/b/${b.handle}`, lastModified: now, priority: 0.6 })),
-    ...products.map((p) => ({ url: `${BASE}/products/${p.slug}`, lastModified: now, priority: 0.4 })),
+    { url: base, lastModified: now, changeFrequency: "monthly", priority: 1 },
+    { url: `${base}/products`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/quote`, lastModified: now, changeFrequency: "yearly", priority: 0.8 },
+    ...collections.map((c) => ({ url: `${base}/products/c/${c.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 })),
+    ...brands.map((b) => ({ url: `${base}/products/b/${b.slug}`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.6 })),
+    ...products.map((p) => ({ url: `${base}/products/${p.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.5 })),
   ];
 }
