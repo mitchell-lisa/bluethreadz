@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { business } from "@/lib/business";
 import { Stitchwork } from "./Stitchwork";
-import { Logo } from "./Logo";
 
 export function Hero() {
   return (
@@ -20,9 +19,7 @@ export function Hero() {
       </div>
 
       <div className="relative mx-auto max-w-4xl px-5 py-24 md:py-36 text-center">
-        <Logo className="mx-auto w-full max-w-lg md:max-w-xl" />
-
-        <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-navy sm:text-xs md:tracking-[0.2em]">
+        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-navy sm:text-xs md:tracking-[0.2em]">
           {business.brandStrip.map((method, i) => (
             <span key={method} className="flex items-center gap-x-2">
               {i > 0 && <span aria-hidden className="text-thread">&bull;</span>}
@@ -31,7 +28,7 @@ export function Hero() {
           ))}
         </p>
 
-        <h1 className="mt-10 font-display font-bold leading-[0.95] tracking-tight text-ink text-balance text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="mt-8 font-display font-bold leading-[0.95] tracking-tight text-ink text-balance text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
           &ldquo;{business.tagline}&rdquo;
         </h1>
 
