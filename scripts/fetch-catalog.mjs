@@ -1,200 +1,166 @@
-// Pulls the live BlueThreadz Shopify catalog at build time.
-// Public JSON feeds only — no API keys, no auth.
-import fs from "node:fs";
-import path from "node:path";
+/**
+ * Pulls the public product catalog from the existing Shopify store and writes a
+ * trimmed, static JSON file the site builds from. Runs automatically before `next build`.
+ *
+ *   data/catalog.json   → { products, collections, brands }
+ *
+ * Nothing here requires a Shopify API key: /products.json and /collections/*.json are public.
+ */
+import { mkdir, writeFile } from "node:fs/promises";
 
-const SHOP = "https://bluethreadz.com";
+const STORE = "https://bluethreadz.com";
 
-const BRAND_HANDLES = new Set([
-  "a4", "american-apparel", "bella-canvas", "carhartt", "champion",
-  "cornerstone", "district", "eddie-bauer", "gildan", "hanes",
-  "mercer-mettle", "new-era", "next-level", "next-level-apparel", "nike",
-  "ogio", "port-company", "port-authority", "sport-tek",
-  "the-north-face-company", "travismathew",
-]);
-
-// Categories we surface in navigation, in the order they appear.
-const CATEGORY_ORDER = [
-  "tees", "hooded-sweatshirts", "polos-knits", "1-4-zips", "hats-beanies",
-  "duffel-bags-backpacks", "backpacks", "just-duffels", "ladies", "youth",
-  "high-visibility-workwear", "coolers", "tumblers-bottles-mugs",
+// Customer-facing categories. Shopify collection handle → display name.
+// Brand collections are derived from `vendor`, so they are not listed here.
+const CATEGORIES = [
+  ["tees", "T-Shirts"],
+  ["hooded-sweatshirts", "Sweatshirts & Hoodies"],
+  ["1-4-zips", "Quarter & Half Zips"],
+  ["polos-knits", "Polos & Knits"],
+  ["hats-beanies", "Hats & Beanies"],
+  ["duffel-bags-backpacks", "Bags, Backpacks & Coolers"],
+  ["high-visibility-workwear", "High-Visibility & Workwear"],
+  ["ladies", "Women's"],
+  ["youth", "Youth"],
 ];
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const CACHE = path.join(process.cwd(), ".catalog-cache");
-fs.mkdirSync(CACHE, { recursive: true });
-const cacheKey = (u) => path.join(CACHE, u.replace(/[^a-z0-9]+/gi, "_").slice(-120) + ".json");
-
-async function getJSON(url, tries = 10) {
-  const ck = cacheKey(url);
-  if (fs.existsSync(ck)) {
-    try { return JSON.parse(fs.readFileSync(ck, "utf8")); } catch {}
-  }
-  for (let i = 0; i < tries; i++) {
-    try {
-      const r = await fetch(url, {
-        headers: {
-          "user-agent": "Mozilla/5.0 (compatible; BlueThreadzSiteBuild/1.0)",
-          accept: "application/json",
-        },
-      });
-      if (r.ok) {
-        const j = await r.json();
-        fs.writeFileSync(ck, JSON.stringify(j));
-        return j;
-      }
-    } catch {}
-    await sleep(2000 * (i + 1));
-  }
-  throw new Error("Failed to fetch " + url);
-}
-
-/** Shopify handles can contain characters like ® that break static routes. */
-function toSlug(handle) {
-  return handle
-    .normalize("NFKD")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-function slimProduct(p) {
-  const colorIdx = p.options.findIndex((o) => /colou?r/i.test(o.name));
-  const sizeIdx = p.options.findIndex((o) => /size/i.test(o.name));
-  const key = (i) => (i === 0 ? "option1" : i === 1 ? "option2" : "option3");
-
-  const colors = [];
-  const seen = new Set();
-  for (const v of p.variants) {
-    const c = colorIdx >= 0 ? v[key(colorIdx)] : null;
-    if (!c || seen.has(c)) continue;
-    seen.add(c);
-    // Shopify names variant images with the color slug in them often enough
-    // to match; fall back to the featured image.
-    const img = v.featured_image?.src || null;
-    colors.push({ name: c, image: img });
-  }
-
-  const sizes = [];
-  const sseen = new Set();
-  for (const v of p.variants) {
-    const s = sizeIdx >= 0 ? v[key(sizeIdx)] : null;
-    if (!s || sseen.has(s)) continue;
-    sseen.add(s);
-    sizes.push(s);
-  }
-
-  return {
-    handle: p.handle,
-    slug: toSlug(p.handle),
-    title: p.title.replace(/\s+/g, " ").trim(),
-    vendor: p.vendor || "",
-    type: p.product_type || "",
-    tags: (p.tags || []).slice(0, 12),
-    images: p.images.map((i) => i.src).slice(0, 8),
-    colors: colors.slice(0, 60),
-    sizes,
-    optionNames: p.options.map((o) => o.name),
-    variants: p.variants.map((v) => ({
-      id: v.id,
-      title: v.title,
-      available: v.available,
-      price: v.price,
-      o1: v.option1, o2: v.option2, o3: v.option3,
-      img: v.featured_image?.src || null,
-    })),
-  };
-}
-
-/** Light-on-dark logo variants are derived from the dark ones at build time. */
-function makeLightLogos() {
-  const pub = path.join(process.cwd(), "public");
-  const pairs = [
-    ["logo.svg", "logo-light.svg", "#ffffff", "#93a8d6"],
-    ["mark.svg", "mark-light.svg", "#ffffff", "#ffffff"],
-  ];
-  for (const [src, dest, ink, blue] of pairs) {
-    const from = path.join(pub, src);
-    if (!fs.existsSync(from)) continue;
-    const svg = fs
-      .readFileSync(from, "utf8")
-      .replaceAll('fill="#14161c"', `fill="${ink}"`)
-      .replaceAll('fill="#4a6193"', `fill="${blue}"`);
-    fs.writeFileSync(path.join(pub, dest), svg);
-  }
-}
-
-async function main() {
-  makeLightLogos();
-
-  const collections = (await getJSON(`${SHOP}/collections.json?limit=250`)).collections;
-
-  const products = [];
-  for (let page = 1; page <= 40; page++) {
-    const d = await getJSON(`${SHOP}/products.json?limit=250&page=${page}`);
-    if (!d.products?.length) break;
-    products.push(...d.products.map(slimProduct));
-    await sleep(500);
-    if (d.products.length < 250) break;
-  }
-
-  // Which products belong to which collection
-  const membership = {};
-  const wanted = collections.filter(
-    (c) => (c.products_count || 0) > 0 &&
-      (BRAND_HANDLES.has(c.handle) || CATEGORY_ORDER.includes(c.handle) || c.handle === "featured-products")
-  );
-  for (const c of wanted) {
-    const handles = [];
-    for (let page = 1; page <= 20; page++) {
-      const d = await getJSON(`${SHOP}/collections/${c.handle}/products.json?limit=250&page=${page}`);
-      if (!d.products?.length) break;
-      handles.push(...d.products.map((p) => p.handle));
-      await sleep(400);
-      if (d.products.length < 250) break;
+async function getJSON(url) {
+  for (let attempt = 1; attempt <= 8; attempt++) {
+    await new Promise((r) => setTimeout(r, 400));
+    const res = await fetch(url, { headers: { "user-agent": "bluethreadz-site-build" } });
+    if (res.ok) return res.json();
+    if (res.status === 429 || res.status >= 500) {
+      console.log(`  retry ${attempt} (${res.status}) ${url}`);
+      await new Promise((r) => setTimeout(r, 3000 * attempt));
+      continue;
     }
-    membership[c.handle] = handles;
+    throw new Error(`${res.status} ${url}`);
   }
-
-  const meta = (h) => {
-    const c = collections.find((x) => x.handle === h);
-    return c ? { handle: c.handle, title: c.title.trim(), count: membership[h]?.length || 0 } : null;
-  };
-
-  // Guard against two handles collapsing to the same slug.
-  const seenSlugs = new Map();
-  for (const p of products) {
-    if (seenSlugs.has(p.slug)) p.slug = `${p.slug}-${seenSlugs.get(p.slug) + 1}`;
-    seenSlugs.set(p.slug, (seenSlugs.get(p.slug) || 0) + 1);
-  }
-
-  const out = {
-    fetchedAt: new Date().toISOString(),
-    products,
-    categories: CATEGORY_ORDER.map(meta).filter((c) => c && c.count > 0),
-    brands: [...BRAND_HANDLES].map(meta).filter((c) => c && c.count > 0)
-      .sort((a, b) => a.title.localeCompare(b.title)),
-    featured: membership["featured-products"] || [],
-    membership,
-  };
-
-  fs.mkdirSync(path.join(process.cwd(), "data"), { recursive: true });
-  fs.writeFileSync(path.join(process.cwd(), "data/catalog.json"), JSON.stringify(out));
-
-  // Slim index served as a static file so the 1,600-product search does not
-  // ride along in every page payload.
-  const index = products
-    .filter((p) => p.images.length > 0)
-    .map((p) => ({ h: p.slug, t: p.title, v: p.vendor, img: p.images[0] }));
-  fs.mkdirSync(path.join(process.cwd(), "public"), { recursive: true });
-  fs.writeFileSync(path.join(process.cwd(), "public/search-index.json"), JSON.stringify(index));
-  console.log(
-    `catalog: ${out.products.length} products, ${out.categories.length} categories, ${out.brands.length} brands`
-  );
+  throw new Error(`Gave up fetching ${url}`);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+async function getAll(path) {
+  const out = [];
+  for (let page = 1; page < 40; page++) {
+    const data = await getJSON(`${STORE}${path}?limit=250&page=${page}`);
+    out.push(...data.products);
+    if (data.products.length < 250) break;
+  }
+  return out;
+}
+
+function slug(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function stripHtml(html) {
+  return html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseBody(html) {
+  // Shopify bodies here are: intro sentence(s) + <ul><li>feature</li>...</ul>
+  const features = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)]
+    .map((m) => stripHtml(m[1]))
+    .filter(Boolean);
+  const intro = stripHtml(html.replace(/<ul[\s\S]*?<\/ul>/g, ""));
+  return { intro, features };
+}
+
+const raw = await getAll("/products.json");
+console.log(`fetched ${raw.length} products`);
+
+const membership = new Map(); // handle → Set(categorySlug)
+for (const [handle] of CATEGORIES) {
+  const items = await getAll(`/collections/${handle}/products.json`);
+  for (const p of items) {
+    if (!membership.has(p.handle)) membership.set(p.handle, new Set());
+    membership.get(p.handle).add(handle);
+  }
+  console.log(`  ${handle}: ${items.length}`);
+}
+
+const products = raw
+  .filter((p) => p.images.length > 0)
+  .map((p) => {
+    const colorOpt = p.options.find((o) => /colou?r/i.test(o.name));
+    const sizeOpt = p.options.find((o) => /size/i.test(o.name));
+    const colorIdx = colorOpt ? colorOpt.position : null;
+    const prices = p.variants.map((v) => parseFloat(v.price)).filter((n) => !Number.isNaN(n));
+    const minPrice = prices.length ? Math.min(...prices) : null;
+
+    // color → image (first variant of that color that has a featured image)
+    const colors = [];
+    if (colorOpt) {
+      for (const c of colorOpt.values) {
+        const v = p.variants.find((v) => v[`option${colorIdx}`] === c && v.featured_image);
+        colors.push({ name: c, image: v ? v.featured_image.src : null });
+      }
+    }
+    const sizeIdx = sizeOpt ? sizeOpt.position : null;
+    // Compact variant rows: [shopifyVariantId, color|null, size|null, price, available]
+    const variants = p.variants.map((v) => [
+      v.id,
+      colorIdx ? v[`option${colorIdx}`] : null,
+      sizeIdx ? v[`option${sizeIdx}`] : null,
+      parseFloat(v.price),
+      Boolean(v.available),
+    ]);
+    const { intro, features } = parseBody(p.body_html || "");
+    const cleanTitle = p.title.replace(/\s*®\s*/g, " ").replace(/\s+/g, " ").trim();
+    const styleMatch = cleanTitle.match(/\b([A-Z]{0,5}\d{2,6}[A-Z]{0,4})\b\.?$/);
+    let title = styleMatch ? cleanTitle.slice(0, styleMatch.index) : cleanTitle;
+    title = title.replace(/[\s.,-]+$/, "").trim();
+    // Drop a leading brand name; the brand is shown separately.
+    // Drop a leading brand name even when it's spelled differently ("Bella + Canvas" vs "BELLA+CANVAS").
+    const norm = (t) => t.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const words = title.split(/\s+/);
+    for (let k = Math.min(4, words.length); k > 0; k--) {
+      if (norm(words.slice(0, k).join(" ")) === norm(p.vendor)) { title = words.slice(k).join(" ").replace(/^[\s\-–]+/, ""); break; }
+    }
+
+    return {
+      handle: p.handle,
+      // ASCII route slug (Shopify handles contain "®", which breaks static routing)
+      slug: p.handle.toLowerCase().replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-").replace(/(^-|-$)/g, ""),
+      title,
+      vendor: p.vendor,
+      brandSlug: slug(p.vendor),
+      style: styleMatch ? styleMatch[1] : null,
+      categories: [...(membership.get(p.handle) || [])],
+      tags: p.tags,
+      minPrice,
+      image: p.images[0].src,
+      images: p.images.slice(0, 8).map((i) => i.src),
+      colors,
+      sizes: sizeOpt ? sizeOpt.values : [],
+      variants,
+      intro,
+      features,
+      shopifyUrl: `${STORE}/products/${p.handle}`,
+    };
+  });
+
+const featuredRaw = await getAll("/collections/featured-products/products.json");
+const featured = featuredRaw.map((p) => p.handle).filter((h) => products.some((x) => x.handle === h));
+console.log(`  featured: ${featured.length}`);
+
+const brandCounts = new Map();
+for (const p of products) brandCounts.set(p.vendor, (brandCounts.get(p.vendor) || 0) + 1);
+const brands = [...brandCounts]
+  .map(([name, count]) => ({ name, slug: slug(name), count }))
+  .sort((a, b) => b.count - a.count);
+
+const collections = CATEGORIES.map(([handle, name]) => ({
+  slug: handle,
+  name,
+  count: products.filter((p) => p.categories.includes(handle)).length,
+}));
+
+await mkdir("data", { recursive: true });
+await writeFile("data/catalog.json", JSON.stringify({ products, collections, brands, featured, fetchedAt: new Date().toISOString() }));
+console.log(`wrote ${products.length} products, ${collections.length} categories, ${brands.length} brands`);

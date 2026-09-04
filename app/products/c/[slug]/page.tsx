@@ -1,49 +1,48 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductCard from "@/components/ProductCard";
-import { categories, collectionOf, productsIn } from "@/lib/catalog";
+import { Shell } from "@/components/Shell";
+import { ProductGrid } from "@/components/ProductGrid";
+import { collections, getCollection, productsInCollection, toCard } from "@/lib/catalog";
 
 export function generateStaticParams() {
-  return categories.map((c) => ({ slug: c.handle }));
+  return collections.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const c = collectionOf(slug);
+  const c = getCollection((await params).slug);
   if (!c) return {};
   return {
-    title: `${c.title} for custom decoration`,
-    description: `${c.count} ${c.title.toLowerCase()} we embroider and print. Pick one and start a quote.`,
+    title: `Custom ${c.name} — BlueThreadz`,
+    description: `${c.count} ${c.name.toLowerCase()} styles available with custom embroidery or screen printing. Request a quote from BlueThreadz.`,
   };
 }
 
-export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CollectionPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const c = collectionOf(slug);
-  const items = productsIn(slug);
-  if (!c || items.length === 0) notFound();
+  const c = getCollection(slug);
+  if (!c) notFound();
+  const items = productsInCollection(slug);
+
+  const brandCounts = new Map<string, { slug: string; name: string; count: number }>();
+  for (const p of items) {
+    const b = brandCounts.get(p.brandSlug) ?? { slug: p.brandSlug, name: p.vendor, count: 0 };
+    b.count++;
+    brandCounts.set(p.brandSlug, b);
+  }
+  const facets = [...brandCounts.values()].sort((a, b) => b.count - a.count);
 
   return (
-    <div className="wrap" style={{ paddingBottom: "4rem" }}>
-      <nav className="crumbs" aria-label="Breadcrumb">
-        <Link href="/">Home</Link> <span>/</span>
-        <Link href="/products">Catalogue</Link> <span>/</span> <span>{c.title}</span>
-      </nav>
-
-      <div className="spread" style={{ marginBottom: "1.4rem" }}>
-        <div className="stack">
-          <span className="label">{items.length} styles</span>
-          <h1 className="h2">{c.title}</h1>
-        </div>
-        <Link href="/quote" className="btn btn--thread btn--sm">Start a quote</Link>
-      </div>
-
-      <hr className="stitch" style={{ margin: "1.6rem 0 2.2rem" }} />
-
-      <div className="grid grid--4">
-        {items.map((p) => <ProductCard key={p.handle} p={p} />)}
-      </div>
-    </div>
+    <Shell
+      crumbs={[
+        { href: "/", label: "Home" },
+        { href: "/products", label: "Products" },
+        { href: `/products/c/${slug}`, label: c.name },
+      ]}
+      eyebrow="Category"
+      title={c.name}
+      intro={`${c.count} styles. Every one can be embroidered or printed with your logo — pick a few and request a quote.`}
+    >
+      <ProductGrid items={items.map(toCard)} facetLabel={c.name} facets={{ key: "brandSlug", options: facets }} />
+    </Shell>
   );
 }
