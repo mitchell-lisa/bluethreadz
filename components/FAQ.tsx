@@ -12,7 +12,7 @@ const faqs = [
   },
   {
     q: "Which decoration method should I choose?",
-    a: "It depends on the garment and the artwork. Embroidery is the most durable and looks best on polos, hats, jackets and bags. Screen printing suits tees and hoodies in larger runs. Dye-sublimation, heat transfer and DTG cover full-color, small-batch and detailed designs. If you’re not sure, ask — we’ll recommend one.",
+    a: "It depends on the garment and the artwork. Embroidery is the most durable and looks best on polos, hats, jackets and bags. Screen printing suits tees and hoodies in larger runs. Dye-sublimation, heat transfer and DTG cover full-color, small-batch and detailed designs. If you’re not sure, ask and we will recommend one.",
   },
   {
     q: "Can I mix sizes and styles in one order?",

@@ -17,18 +17,18 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
     const lines = [
       `Name: ${f.get("name")}`,
       `Email: ${f.get("email")}`,
-      `Phone: ${f.get("phone") || "—"}`,
-      `Organization: ${f.get("org") || "—"}`,
+      `Phone: ${f.get("phone") || "not given"}`,
+      `Organization: ${f.get("org") || "not given"}`,
       `Item(s): ${f.get("item")}`,
       `Quantity: ${f.get("qty")}`,
-      `Method: ${f.get("method") || "Not sure — recommend one"}`,
-      `Needed by: ${f.get("date") || "—"}`,
+      `Method: ${f.get("method") || "Not sure, recommend one"}`,
+      `Needed by: ${f.get("date") || "not given"}`,
       "",
       `Details:`,
       `${f.get("details") || ""}`,
     ];
     if (business.quoteTo) {
-      const subject = encodeURIComponent(`Quote request — ${f.get("item")} ×${f.get("qty")}`);
+      const subject = encodeURIComponent(`Quote request: ${f.get("item")} x${f.get("qty")}`);
       const body = encodeURIComponent(lines.join("\n"));
       window.location.href = `mailto:${business.quoteTo}?subject=${subject}&body=${body}`;
       setStatus("sent");
@@ -42,7 +42,7 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
       id="quote"
       eyebrow="Free quote"
       title="Tell us about your order"
-      intro="The more you can tell us, the faster we can price it. Don’t have artwork yet? That’s fine — say so and we’ll help."
+      intro="The more you can tell us, the faster we can price it. Don’t have artwork yet? That’s fine. Say so and we’ll help."
     >
       <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-5 max-w-3xl">
         <div>
@@ -78,7 +78,7 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
         <div className="md:col-span-2">
           <label htmlFor="method" className={labelCls}>Decoration method</label>
           <select id="method" name="method" className={inputCls} defaultValue={initialMethod ?? ""}>
-            <option value="">Not sure — recommend one</option>
+            <option value="">Not sure, recommend one</option>
             {business.methods.map((m) => (
               <option key={m.name} value={m.name}>{m.name}</option>
             ))}
@@ -115,7 +115,7 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
         )}
         {status === "noemail" && (
           <p role="status" className="md:col-span-2 border-l-4 border-thread pl-4 py-2 text-navy">
-            Thanks — please send these details to us by DM on{" "}
+            Thanks. Please send these details to us by DM on{" "}
             <a className="underline" href={business.social.instagram} target="_blank" rel="noopener">
               Instagram @bluethreadz
             </a>{" "}

@@ -1,13 +1,33 @@
 import { business } from "@/lib/business";
 import { brands, collections } from "@/lib/catalog";
+import { SHOP_STORES } from "@/lib/stores";
+import { safeShopIndex, storeCounts } from "@/lib/shopify/catalog";
 import { HeaderClient, type Menu } from "./HeaderClient";
 
 /** Server component: builds the menu data (from the catalog) and hands it to the client nav. */
-export function Header() {
+export async function Header() {
+  const index = await safeShopIndex();
+  const counts = index ? storeCounts(index) : null;
   const menus: Menu[] = [
     {
-      label: "Products",
+      label: "Shop Team Stores",
+      href: "/shop",
+      viewAll: "All team stores",
+      columns: [
+        {
+          title: "Organizations",
+          links: SHOP_STORES.map((s) => ({
+            label: s.name,
+            href: `/shop/${s.handle}`,
+            note: counts ? String(counts[s.handle] ?? 0) : s.status,
+          })),
+        },
+      ],
+    },
+    {
+      label: "Apparel Catalog",
       href: "/products",
+      viewAll: "Browse the catalog",
       columns: [
         { title: "By category", links: collections.map((c) => ({ label: c.name, href: `/products/c/${c.slug}`, note: `${c.count}` })) },
         { title: "Top brands", links: brands.slice(0, 12).map((b) => ({ label: b.name, href: `/products/b/${b.slug}` })), footer: { label: "All 30+ brands →", href: "/products#brands" } },

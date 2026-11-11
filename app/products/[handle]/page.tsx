@@ -17,7 +17,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const p = getProduct((await params).handle);
   if (!p) return {};
-  const title = `${p.title} — Custom Embroidered or Printed | BlueThreadz`;
+  const title = `${p.title} | Custom Embroidered or Printed | BlueThreadz`;
   const description = `${p.vendor} ${p.title}${p.style ? ` (${p.style})` : ""} with your logo. ${p.colors.length} colors, sizes ${p.sizes[0] ?? ""}–${p.sizes[p.sizes.length - 1] ?? ""}. Request a quote from BlueThreadz.`;
   return { title, description, openGraph: { title, description, images: [{ url: img(p.image, 1200) }] } };
 }

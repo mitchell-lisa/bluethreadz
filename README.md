@@ -1,6 +1,6 @@
 # BlueThreadz
 
-Marketing and catalogue site for BlueThreadz — custom embroidery and printing on apparel.
+Marketing and catalogue site for BlueThreadz: custom embroidery and printing on apparel.
 Next.js (App Router) with Tailwind CSS.
 
 See `RECOVERY.md` for where this source came from.
@@ -11,10 +11,13 @@ See `RECOVERY.md` for where this source came from.
     npm run build     # prebuild pulls the catalogue from bluethreadz.com
     npm start
 
-`npm run dev` starts the dev server. The catalogue is fetched at build time by
-`scripts/fetch-catalog.mjs` via the `prebuild` script, which writes `data/catalog.json`
-and caches raw responses in `.catalog-cache/`. Both are git-ignored — delete
-`.catalog-cache/` to force a fresh pull.
+`npm run dev` starts the dev server. Copy `.env.example` to `.env.local` and set
+`SHOPIFY_STOREFRONT_TOKEN` before browsing the team stores.
+
+The blank apparel catalogue is snapshotted in `data/catalog.json`. `prebuild` still
+tries the public Shopify feed and, if that feed is unavailable, keeps the snapshot.
+Team stores, the cart, and checkout use the Shopify Storefront API
+(`SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_TOKEN`). Do not commit the token.
 
 ## Layout
 

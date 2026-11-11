@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { business } from "@/lib/business";
+import { SHOP_STORES } from "@/lib/stores";
+import { safeShopIndex, storeCounts } from "@/lib/shopify/catalog";
 import { Stitchwork } from "./Stitchwork";
 
-export function Hero() {
+export async function Hero() {
+  const index = await safeShopIndex();
+  const counts = index ? storeCounts(index) : null;
+  const total = counts ? Object.values(counts).reduce((sum, n) => sum + n, 0) : null;
+
   return (
     <section id="top" className="relative overflow-hidden bg-[#f6f3ec]">
-      {/* Stitch GIF as full-bleed background */}
       <div className="absolute inset-0" aria-hidden>
         {business.media.stitchBlue ? (
           <div
@@ -15,32 +20,54 @@ export function Hero() {
         ) : (
           <Stitchwork variant="blue" className="absolute inset-0 h-full w-full object-cover" />
         )}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(246,243,236,.85)_0%,rgba(246,243,236,.55)_45%,rgba(246,243,236,.25)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(246,243,236,.88)_0%,rgba(246,243,236,.62)_50%,rgba(246,243,236,.35)_100%)]" />
       </div>
 
-      <div className="relative mx-auto max-w-4xl px-5 py-24 md:py-36 text-center">
-        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-navy sm:text-xs md:tracking-[0.2em]">
-          {business.brandStrip.map((method, i) => (
-            <span key={method} className="flex items-center gap-x-2">
-              {i > 0 && <span aria-hidden className="text-thread">&bull;</span>}
-              {method}
-            </span>
-          ))}
-        </p>
+      <div className="relative mx-auto max-w-6xl px-5 py-16 md:py-24 grid lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] gap-10 lg:gap-16 items-center">
+        <div>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-display text-[10px] font-bold uppercase tracking-[0.14em] text-navy sm:text-xs">
+            {business.brandStrip.map((method, i) => (
+              <span key={method} className="flex items-center gap-x-2">
+                {i > 0 && <span aria-hidden className="text-thread">&bull;</span>}
+                {method}
+              </span>
+            ))}
+          </p>
 
-        <h1 className="mt-8 font-display font-bold leading-[0.95] tracking-tight text-ink text-balance text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
-          &ldquo;{business.tagline}&rdquo;
-        </h1>
+          <h1 className="mt-6 font-display font-bold leading-[0.95] tracking-tight text-ink text-balance text-4xl sm:text-5xl md:text-6xl">
+            Your teams. Your brands. One place to shop.
+          </h1>
+          <p className="mt-4 font-display italic text-xl text-navy">&ldquo;{business.tagline}&rdquo;</p>
+          <p className="mt-5 text-lg text-ink-soft leading-relaxed max-w-xl">
+            Shop Aces Softball, Mountainside FC, RN Threadz, and St. Teresa of Avila from one site. Custom pieces live here too. Decoration on blanks is still quoted the same way.
+          </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-          <Link href="/quote" className="inline-flex items-center justify-center h-14 px-8 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors">Get a free quote</Link>
-          <Link href="/products" className="font-display font-semibold text-navy underline underline-offset-4 decoration-thread/50 hover:decoration-thread whitespace-nowrap">or browse 1,600+ styles &rarr;</Link>
+          <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+            <Link href="/#stores" className="inline-flex items-center justify-center h-14 px-8 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors">Shop team stores</Link>
+            <Link href="/quote" className="font-display font-semibold text-navy underline underline-offset-4 decoration-thread/50 hover:decoration-thread">Request a quote</Link>
+          </div>
+
+          <ul className="mt-10 grid grid-cols-3 gap-4 max-w-md border-t border-navy/20 pt-6">
+            <Stat n="4" l="team stores" />
+            <Stat n={total ? String(total) : "487"} l="products" />
+            <Stat n="5" l="ways to decorate" />
+          </ul>
         </div>
 
-        <ul className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto border-t border-navy/20 pt-6 text-left">
-          <Stat n="1,600+" l="styles in stock" />
-          <Stat n="30+" l="name brands" />
-          <Stat n="5" l="decoration methods" />
+        <ul className="bg-navy text-cloth divide-y divide-white/15 shadow-[0_24px_40px_-24px_rgba(11,37,69,0.55)]">
+          {SHOP_STORES.map((store) => (
+            <li key={store.handle}>
+              <Link href={`/shop/${store.handle}`} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-white/5">
+                <span>
+                  <span className="block font-display font-bold text-lg leading-tight">{store.name}</span>
+                  <span className="block text-xs uppercase tracking-wider text-white/70 mt-1">
+                    {counts ? `${counts[store.handle] ?? 0} products` : store.eyebrow}
+                  </span>
+                </span>
+                <span className="font-display uppercase tracking-wider text-[11px] font-semibold text-thread-bright whitespace-nowrap">{store.status}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
       <div className="stitch text-thread absolute bottom-0 inset-x-0" />

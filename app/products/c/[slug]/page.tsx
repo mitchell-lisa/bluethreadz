@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const c = getCollection((await params).slug);
   if (!c) return {};
   return {
-    title: `Custom ${c.name} — BlueThreadz`,
+    title: `Custom ${c.name} | BlueThreadz`,
     description: `${c.count} ${c.name.toLowerCase()} styles available with custom embroidery or screen printing. Request a quote from BlueThreadz.`,
   };
 }
@@ -40,7 +40,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
       ]}
       eyebrow="Category"
       title={c.name}
-      intro={`${c.count} styles. Every one can be embroidered or printed with your logo — pick a few and request a quote.`}
+      intro={`${c.count} styles. Every one can be embroidered or printed with your logo. Pick a few and request a quote.`}
     >
       <ProductGrid items={items.map(toCard)} facetLabel={c.name} facets={{ key: "brandSlug", options: facets }} />
     </Shell>

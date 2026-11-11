@@ -143,7 +143,7 @@ export const business = {
   quoteTo: null as string | null,
 
   seo: {
-    title: "BlueThreadz — Build your brand in style | Custom Embroidery & Printing",
+    title: "BlueThreadz: Build your brand in style | Custom Embroidery & Printing",
     description:
       "Custom embroidered and printed apparel, hats, bags and workwear for businesses, teams, schools and events. Embroidery, screen print, dye-sublimation, heat transfer and DTG. Request a free quote.",
   },

@@ -8,7 +8,7 @@ import { Section } from "./Section";
 export function Work() {
   const items = featured.slice(0, 8);
   return (
-    <Section id="work" eyebrow="Featured styles" title="What people are ordering right now" intro="A few of the garments we decorate most. Every one is available with your logo — embroidered or printed.">
+    <Section id="work" eyebrow="Featured styles" title="What people are ordering right now" intro="A few of the garments we decorate most. Every one is available with your logo, embroidered or printed.">
       <ul className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
         {items.map((p) => (
           <li key={p.handle}><ProductTile p={toCard(p)} /></li>

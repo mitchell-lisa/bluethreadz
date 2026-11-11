@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const ITEMS = ["T-shirts", "Hoodies & sweatshirts", "Polos", "Quarter-zips & jackets", "Hats & beanies", "Bags & coolers", "Hi-vis & workwear", "Something else"];
-const METHODS = ["Not sure — recommend one", "Embroidery", "Screen Printing", "Dye-Sublimation", "Heat Transfer", "DTG"];
+const METHODS = ["Not sure, recommend one", "Embroidery", "Screen Printing", "Dye-Sublimation", "Heat Transfer", "DTG"];
 
 /** Three fields, one button. The fastest path on the site to a quote request. */
 export function QuickQuote() {

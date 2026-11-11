@@ -6,8 +6,8 @@ import { QuoteFab } from "@/components/QuoteFab";
 import { Quote } from "@/components/Quote";
 
 export const metadata: Metadata = {
-  title: "Request a Free Quote — BlueThreadz",
-  description: "Tell us what you need — garment, quantity, artwork and date — and BlueThreadz will quote it.",
+  title: "Request a Free Quote | BlueThreadz",
+  description: "Tell us what you need: garment, quantity, artwork and date. BlueThreadz will quote it.",
 };
 
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ item?: string; method?: string; qty?: string }> }) {

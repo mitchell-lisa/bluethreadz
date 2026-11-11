@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
+import { CartButton } from "./CartButton";
 
 export type MenuLink = { label: string; href: string; note?: string };
 export type MenuColumn = { title: string; links: MenuLink[]; footer?: MenuLink };
-export type Menu = { label: string; href: string; columns?: MenuColumn[] };
+export type Menu = { label: string; href: string; columns?: MenuColumn[]; viewAll?: string };
+
+const DESKTOP_LATER = new Set(["Who We Serve", "Featured", "FAQ", "Contact"]);
 
 export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; phone: string | null; phoneDisplay: string | null }) {
   const [open, setOpen] = useState(false); // mobile drawer
@@ -28,18 +31,21 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
 
   return (
     <header className="sticky top-0 z-40 bg-cloth/95 backdrop-blur border-b border-line">
-      <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between gap-6">
+      <p className="bg-navy text-cloth text-center text-[11px] sm:text-xs font-display uppercase tracking-[0.14em] py-2 px-4">
+        Made to order apparel. Typical production is 7 to 10 business days, plus delivery.
+      </p>
+      <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between gap-4">
         <a href="/" aria-label="Blue Threadz home" className="shrink-0"><Logo className="h-9" /></a>
 
-        <nav className="hidden md:flex items-center gap-1 h-full" onMouseLeave={hide}>
+        <nav className="hidden md:flex items-center gap-0.5 h-full" onMouseLeave={hide}>
           {menus.map((m) => (
-            <div key={m.label} className="relative h-16 flex items-center" onMouseEnter={() => (m.columns ? show(m.label) : setActive(null))}>
+            <div key={m.label} className={`relative h-16 items-center ${DESKTOP_LATER.has(m.label) ? "hidden 2xl:flex" : "flex"}`} onMouseEnter={() => (m.columns ? show(m.label) : setActive(null))}>
               <a
                 href={m.href}
                 aria-haspopup={m.columns ? "true" : undefined}
                 aria-expanded={m.columns ? active === m.label : undefined}
                 onFocus={() => m.columns && show(m.label)}
-                className={`px-2.5 h-16 inline-flex items-center gap-1 whitespace-nowrap font-display uppercase tracking-wide text-[13px] font-semibold transition-colors ${active === m.label ? "text-thread" : "text-navy hover:text-thread"}`}
+                className={`px-2 h-16 inline-flex items-center gap-1 whitespace-nowrap font-display uppercase tracking-wide text-[12px] xl:text-[13px] font-semibold transition-colors ${active === m.label ? "text-thread" : "text-navy hover:text-thread"}`}
               >
                 {m.label}
                 {m.columns && <Chevron open={active === m.label} />}
@@ -48,9 +54,10 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {phone && <a href={`tel:${phone}`} className="hidden lg:inline font-display font-semibold text-navy text-lg tracking-wide">{phoneDisplay}</a>}
-          <a href="/quote" className="hidden sm:inline-flex items-center h-10 px-4 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-semibold text-[13px] hover:bg-navy transition-colors">Free Quote</a>
+          <CartButton />
+          <a href="/quote" className="hidden sm:inline-flex items-center h-10 px-3 xl:px-4 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-semibold text-[12px] xl:text-[13px] hover:bg-navy transition-colors">Free Quote</a>
           <button type="button" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="md:hidden h-11 w-11 -mr-2 grid place-items-center text-navy">
             <span className="relative block w-6 h-4">
               <span className={`absolute left-0 h-0.5 w-6 bg-current transition-all ${open ? "top-1.5 rotate-45" : "top-0"}`} />
@@ -64,7 +71,7 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
       {/* Desktop flyout: full-width panel under the bar */}
       {menus.map((m) =>
         m.columns && active === m.label ? (
-          <div key={m.label} className="hidden md:block absolute inset-x-0 top-16 bg-cloth border-b border-line shadow-[0_24px_40px_-24px_rgba(11,37,69,0.35)]" onMouseEnter={() => show(m.label)} onMouseLeave={hide}>
+          <div key={m.label} className="hidden md:block absolute inset-x-0 top-full bg-cloth border-b border-line shadow-[0_24px_40px_-24px_rgba(11,37,69,0.35)]" onMouseEnter={() => show(m.label)} onMouseLeave={hide}>
             <div className="mx-auto max-w-6xl px-5 py-8 grid gap-10" style={{ gridTemplateColumns: `repeat(${m.columns.length}, minmax(0, 1fr))` }}>
               {m.columns.map((col) => (
                 <div key={col.title}>
@@ -100,7 +107,7 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
                     </button>
                     {expanded === m.label && (
                       <div className="pb-3 pl-3">
-                        <a href={m.href} onClick={() => setOpen(false)} className="block py-1.5 font-display uppercase tracking-wider text-sm font-semibold text-thread">All {m.label.toLowerCase()} →</a>
+                        <a href={m.href} onClick={() => setOpen(false)} className="block py-1.5 font-display uppercase tracking-wider text-sm font-semibold text-thread">{m.viewAll ?? `All ${m.label.toLowerCase()}`} →</a>
                         {m.columns.map((col) => (
                           <div key={col.title} className="mt-2">
                             <p className="font-display uppercase tracking-[0.2em] text-[11px] font-semibold text-navy/50">{col.title}</p>
@@ -119,7 +126,10 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
                 )}
               </li>
             ))}
-            <li className="pt-3"><a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Request a Free Quote</a></li>
+            <li className="pt-3 grid gap-2">
+              <a href="/cart" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold text-lg">Cart</a>
+              <a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Request a Free Quote</a>
+            </li>
           </ul>
         </nav>
       )}

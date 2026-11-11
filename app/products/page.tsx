@@ -4,9 +4,9 @@ import { Shell } from "@/components/Shell";
 import { brands, collections, img, productsInCollection } from "@/lib/catalog";
 
 export const metadata: Metadata = {
-  title: "Products — BlueThreadz Custom Apparel Catalog",
+  title: "Products | BlueThreadz Custom Apparel Catalog",
   description:
-    "Browse tees, hoodies, polos, hats, bags and workwear from Nike, Carhartt, Port Authority and 30 more brands — all available with custom embroidery or printing.",
+    "Browse tees, hoodies, polos, hats, bags and workwear from Nike, Carhartt, Port Authority and 30 more brands, all available with custom embroidery or printing.",
 };
 
 export default function ProductsPage() {

@@ -1,5 +1,7 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+import { ShopByOrg } from "@/components/ShopByOrg";
+import { MakeItYours } from "@/components/MakeItYours";
 import { CategoryStrip } from "@/components/CategoryStrip";
 import { QuickQuote } from "@/components/QuickQuote";
 import { FAQ } from "@/components/FAQ";
@@ -13,12 +15,16 @@ import { Contact } from "@/components/Contact";
 import { StickyBar } from "@/components/StickyBar";
 import { QuoteFab } from "@/components/QuoteFab";
 
+export const revalidate = 3600;
+
 export default function Home() {
   return (
     <>
       <Header />
       <main className="pb-14 sm:pb-0">
         <Hero />
+        <ShopByOrg />
+        <MakeItYours />
         <QuickQuote />
         <CategoryStrip />
         <Methods />

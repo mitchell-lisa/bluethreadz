@@ -6,7 +6,7 @@
  *
  * Nothing here requires a Shopify API key: /products.json and /collections/*.json are public.
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 
 const STORE = "https://bluethreadz.com";
 
@@ -71,6 +71,7 @@ function parseBody(html) {
   return { intro, features };
 }
 
+async function build() {
 const raw = await getAll("/products.json");
 console.log(`fetched ${raw.length} products`);
 
@@ -164,3 +165,24 @@ const collections = CATEGORIES.map(([handle, name]) => ({
 await mkdir("data", { recursive: true });
 await writeFile("data/catalog.json", JSON.stringify({ products, collections, brands, featured, fetchedAt: new Date().toISOString() }));
 console.log(`wrote ${products.length} products, ${collections.length} categories, ${brands.length} brands`);
+}
+
+async function hasSnapshot() {
+  try {
+    await access("data/catalog.json");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+try {
+  await build();
+} catch (err) {
+  if (await hasSnapshot()) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`Catalog feed unavailable (${message}). Using the committed data/catalog.json snapshot.`);
+  } else {
+    throw err;
+  }
+}

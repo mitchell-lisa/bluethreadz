@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const b = getBrand((await params).slug);
   if (!b) return {};
   return {
-    title: `Custom ${b.name} Apparel — BlueThreadz`,
+    title: `Custom ${b.name} Apparel | BlueThreadz`,
     description: `${b.count} ${b.name} styles available with custom embroidery or printing from BlueThreadz. Request a quote.`,
   };
 }
