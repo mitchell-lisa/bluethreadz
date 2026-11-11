@@ -1,16 +1,7 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
-import { ShopByOrg } from "@/components/ShopByOrg";
-import { MakeItYours } from "@/components/MakeItYours";
-import { CategoryStrip } from "@/components/CategoryStrip";
-import { QuickQuote } from "@/components/QuickQuote";
-import { FAQ } from "@/components/FAQ";
-import { Methods } from "@/components/Methods";
-import { Serve } from "@/components/Serve";
-import { Products } from "@/components/Products";
-import { Work } from "@/components/Work";
-import { Process } from "@/components/Process";
-import { Quote } from "@/components/Quote";
+import { ShopTiles } from "@/components/ShopTiles";
+import { HomeQuote } from "@/components/HomeQuote";
 import { Contact } from "@/components/Contact";
 import { StickyBar } from "@/components/StickyBar";
 import { QuoteFab } from "@/components/QuoteFab";
@@ -23,17 +14,8 @@ export default function Home() {
       <Header />
       <main className="pb-24 sm:pb-0">
         <Hero />
-        <ShopByOrg />
-        <MakeItYours />
-        <QuickQuote />
-        <CategoryStrip />
-        <Methods />
-        <Serve />
-        <Work />
-        <Process />
-        <Products />
-        <FAQ />
-        <Quote />
+        <ShopTiles />
+        <HomeQuote />
       </main>
       <Contact />
       <StickyBar />

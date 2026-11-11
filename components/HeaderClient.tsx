@@ -51,7 +51,7 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
     <header className="sticky top-0 z-40 bg-cloth/95 backdrop-blur border-b border-line">
       <div ref={barRef}>
       <p className="bg-navy text-cloth text-center text-xs sm:text-xs font-display uppercase tracking-[0.08em] sm:tracking-[0.14em] leading-snug py-2 px-4">
-        Made to order apparel. Typical production is 7 to 10 business days, plus delivery.
+        Made to order. Ships in 7 to 10 business days.
       </p>
       <div className="mx-auto max-w-6xl px-3 sm:px-5 h-16 flex items-center justify-between gap-2 sm:gap-4">
         <a href="/" aria-label="Blue Threadz home" className="shrink min-w-0"><Logo className="h-7 sm:h-9 w-auto max-w-full" /></a>

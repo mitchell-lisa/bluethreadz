@@ -31,21 +31,21 @@ export async function Header() {
       columns: [
         { title: "By category", links: collections.map((c) => ({ label: c.name, href: `/products/c/${c.slug}`, note: `${c.count}` })) },
         { title: "Top brands", links: brands.slice(0, 12).map((b) => ({ label: b.name, href: `/products/b/${b.slug}` })), footer: { label: "All 30+ brands →", href: "/products#brands" } },
-        { title: "Branding options", links: business.methods.map((m) => ({ label: m.name, href: "/#methods", note: m.bestFor })) },
+        { title: "Branding options", links: business.methods.map((m) => ({ label: m.name, href: "/quote", note: m.bestFor })) },
       ],
     },
     {
       label: "Methods",
-      href: "/#methods",
-      columns: [{ title: "How we decorate", links: business.methods.map((m) => ({ label: m.name, href: "/#methods", note: m.bestFor })) }],
+      href: "/quote",
+      columns: [{ title: "How we decorate", links: business.methods.map((m) => ({ label: m.name, href: "/quote", note: m.bestFor })) }],
     },
     {
       label: "Who We Serve",
-      href: "/#serve",
-      columns: [{ title: "Made for", links: business.audiences.map((a) => ({ label: a.name, href: "/#serve", note: a.blurb })) }],
+      href: "/quote",
+      columns: [{ title: "Made for", links: business.audiences.map((a) => ({ label: a.name, href: "/quote", note: a.blurb })) }],
     },
-    { label: "Featured", href: "/#work" },
-    { label: "FAQ", href: "/#faq" },
+    { label: "Featured", href: "/products" },
+    { label: "FAQ", href: "/quote" },
     { label: "Contact", href: "#contact" },
   ];
   return <HeaderClient menus={menus} phone={business.phone} phoneDisplay={business.phoneDisplay} />;
