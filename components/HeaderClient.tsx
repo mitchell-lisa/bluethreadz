@@ -14,7 +14,9 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
   const [open, setOpen] = useState(false); // mobile drawer
   const [active, setActive] = useState<string | null>(null); // desktop flyout
   const [expanded, setExpanded] = useState<string | null>(null); // mobile accordion
+  const [menuTop, setMenuTop] = useState(112);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   const show = (label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -29,15 +31,32 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const measure = () => {
+      if (barRef.current) setMenuTop(barRef.current.getBoundingClientRect().height);
+    };
+    measure();
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("resize", measure);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("resize", measure);
+    };
+  }, [open]);
+
   return (
+    <>
     <header className="sticky top-0 z-40 bg-cloth/95 backdrop-blur border-b border-line">
-      <p className="bg-navy text-cloth text-center text-[11px] sm:text-xs font-display uppercase tracking-[0.14em] py-2 px-4">
+      <div ref={barRef}>
+      <p className="bg-navy text-cloth text-center text-xs sm:text-xs font-display uppercase tracking-[0.08em] sm:tracking-[0.14em] leading-snug py-2 px-4">
         Made to order apparel. Typical production is 7 to 10 business days, plus delivery.
       </p>
-      <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between gap-4">
-        <a href="/" aria-label="Blue Threadz home" className="shrink-0"><Logo className="h-9" /></a>
+      <div className="mx-auto max-w-6xl px-3 sm:px-5 h-16 flex items-center justify-between gap-2 sm:gap-4">
+        <a href="/" aria-label="Blue Threadz home" className="shrink min-w-0"><Logo className="h-7 sm:h-9 w-auto max-w-full" /></a>
 
-        <nav className="hidden md:flex items-center gap-0.5 h-full" onMouseLeave={hide}>
+        <nav className="hidden xl:flex items-center gap-0.5 h-full" onMouseLeave={hide}>
           {menus.map((m) => (
             <div key={m.label} className={`relative h-16 items-center ${DESKTOP_LATER.has(m.label) ? "hidden 2xl:flex" : "flex"}`} onMouseEnter={() => (m.columns ? show(m.label) : setActive(null))}>
               <a
@@ -54,11 +73,11 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {phone && <a href={`tel:${phone}`} className="hidden lg:inline font-display font-semibold text-navy text-lg tracking-wide">{phoneDisplay}</a>}
           <CartButton />
-          <a href="/quote" className="hidden sm:inline-flex items-center h-10 px-3 xl:px-4 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-semibold text-[12px] xl:text-[13px] hover:bg-navy transition-colors">Free Quote</a>
-          <button type="button" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="md:hidden h-11 w-11 -mr-2 grid place-items-center text-navy">
+          <a href="/quote" className="hidden sm:inline-flex items-center h-11 px-3 xl:px-4 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-semibold text-[12px] xl:text-[13px] hover:bg-navy transition-colors">Free Quote</a>
+          <button type="button" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} onClick={() => setOpen((v) => !v)} className="xl:hidden h-11 w-11 grid place-items-center text-navy shrink-0">
             <span className="relative block w-6 h-4">
               <span className={`absolute left-0 h-0.5 w-6 bg-current transition-all ${open ? "top-1.5 rotate-45" : "top-0"}`} />
               <span className={`absolute left-0 top-1.5 h-0.5 w-6 bg-current transition-opacity ${open ? "opacity-0" : ""}`} />
@@ -67,11 +86,12 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
           </button>
         </div>
       </div>
+      </div>
 
       {/* Desktop flyout: full-width panel under the bar */}
       {menus.map((m) =>
         m.columns && active === m.label ? (
-          <div key={m.label} className="hidden md:block absolute inset-x-0 top-full bg-cloth border-b border-line shadow-[0_24px_40px_-24px_rgba(11,37,69,0.35)]" onMouseEnter={() => show(m.label)} onMouseLeave={hide}>
+          <div key={m.label} className="hidden xl:block absolute inset-x-0 top-full bg-cloth border-b border-line shadow-[0_24px_40px_-24px_rgba(11,37,69,0.35)]" onMouseEnter={() => show(m.label)} onMouseLeave={hide}>
             <div className="mx-auto max-w-6xl px-5 py-8 grid gap-10" style={{ gridTemplateColumns: `repeat(${m.columns.length}, minmax(0, 1fr))` }}>
               {m.columns.map((col) => (
                 <div key={col.title}>
@@ -94,26 +114,32 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
         ) : null,
       )}
 
-      {/* Mobile drawer with accordions */}
+    </header>
+
+      {/* Mobile drawer sits outside the header so backdrop-blur does not trap position:fixed. */}
       {open && (
-        <nav className="md:hidden border-t border-line bg-cloth max-h-[calc(100vh-4rem)] overflow-y-auto">
-          <ul className="px-5 py-3">
+        <nav className="xl:hidden fixed inset-x-0 bottom-0 z-50 overflow-y-auto overscroll-contain border-t border-line bg-cloth" style={{ top: menuTop }}>
+          <ul className="px-5 py-3 pb-8">
+            <li className="pb-3 grid gap-2 border-b border-line">
+              <a href="/cart" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold text-lg">Cart</a>
+              <a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Request a Free Quote</a>
+            </li>
             {menus.map((m) => (
               <li key={m.label} className="border-b border-line last:border-0">
                 {m.columns ? (
                   <>
-                    <button type="button" onClick={() => setExpanded(expanded === m.label ? null : m.label)} aria-expanded={expanded === m.label} className="w-full flex items-center justify-between py-3 font-display uppercase tracking-wide text-xl font-semibold text-navy">
+                    <button type="button" onClick={() => setExpanded(expanded === m.label ? null : m.label)} aria-expanded={expanded === m.label} className="w-full min-h-11 flex items-center justify-between py-3 font-display uppercase tracking-wide text-lg sm:text-xl font-semibold text-navy text-left">
                       {m.label} <Chevron open={expanded === m.label} />
                     </button>
                     {expanded === m.label && (
                       <div className="pb-3 pl-3">
-                        <a href={m.href} onClick={() => setOpen(false)} className="block py-1.5 font-display uppercase tracking-wider text-sm font-semibold text-thread">{m.viewAll ?? `All ${m.label.toLowerCase()}`} →</a>
+                        <a href={m.href} onClick={() => setOpen(false)} className="flex items-center min-h-11 py-2 font-display uppercase tracking-wider text-sm font-semibold text-thread">{m.viewAll ?? `All ${m.label.toLowerCase()}`} →</a>
                         {m.columns.map((col) => (
                           <div key={col.title} className="mt-2">
                             <p className="font-display uppercase tracking-[0.2em] text-[11px] font-semibold text-navy/50">{col.title}</p>
                             <ul>
                               {col.links.map((l) => (
-                                <li key={l.label}><a href={l.href} onClick={() => setOpen(false)} className="block py-1.5 text-navy font-semibold">{l.label}</a></li>
+                                <li key={l.label}><a href={l.href} onClick={() => setOpen(false)} className="flex items-center min-h-11 py-2 text-navy font-semibold">{l.label}</a></li>
                               ))}
                             </ul>
                           </div>
@@ -122,18 +148,14 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
                     )}
                   </>
                 ) : (
-                  <a href={m.href} onClick={() => setOpen(false)} className="block py-3 font-display uppercase tracking-wide text-xl font-semibold text-navy">{m.label}</a>
+                  <a href={m.href} onClick={() => setOpen(false)} className="flex items-center min-h-11 py-3 font-display uppercase tracking-wide text-lg sm:text-xl font-semibold text-navy">{m.label}</a>
                 )}
               </li>
             ))}
-            <li className="pt-3 grid gap-2">
-              <a href="/cart" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold text-lg">Cart</a>
-              <a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Request a Free Quote</a>
-            </li>
           </ul>
         </nav>
       )}
-    </header>
+    </>
   );
 }
 

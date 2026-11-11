@@ -87,7 +87,7 @@ function FacetChip({ label, active, onClick }: { label: string; active: boolean;
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`h-9 px-3 font-display uppercase tracking-wider text-sm font-semibold border transition-colors ${
+      className={`min-h-11 px-3 font-display uppercase tracking-wider text-sm font-semibold border transition-colors ${
         active ? "bg-navy text-cloth border-navy" : "border-navy/25 text-navy hover:border-navy"
       }`}
     >

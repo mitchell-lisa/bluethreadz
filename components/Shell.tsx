@@ -21,7 +21,7 @@ export function Shell({
   return (
     <>
       <Header />
-      <main className="pb-14 sm:pb-0">
+      <main className="pb-24 sm:pb-0">
         <div className="bg-navy text-cloth weave">
           <div className="mx-auto max-w-6xl px-5 pt-8 pb-10 md:pt-12 md:pb-14">
             {crumbs && (
@@ -30,7 +30,7 @@ export function Shell({
                   {crumbs.map((c, i) => (
                     <li key={c.href} className="flex gap-x-2">
                       {i > 0 && <span aria-hidden>/</span>}
-                      <Link href={c.href} className="hover:text-cloth">
+                      <Link href={c.href} className="hover:text-cloth inline-flex items-center min-h-11">
                         {c.label}
                       </Link>
                     </li>

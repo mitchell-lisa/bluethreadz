@@ -25,9 +25,9 @@ export function CategoryStrip() {
   return (
     <section className="bg-white border-b border-line">
       <div className="mx-auto max-w-6xl px-5 py-10 md:py-14">
-        <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4 mb-6">
           <h2 className="font-display font-bold uppercase text-2xl md:text-3xl tracking-tight text-navy">Shop by category</h2>
-          <Link href="/products" className="font-display uppercase tracking-wider text-sm font-semibold text-thread hover:text-navy">All products →</Link>
+          <Link href="/products" className="inline-flex items-center min-h-11 font-display uppercase tracking-wider text-sm font-semibold text-thread hover:text-navy">All products →</Link>
         </div>
         <ul className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3">
           {collections.map((c) => {

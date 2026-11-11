@@ -41,7 +41,7 @@ export function CartView({ cart, slugs }: { cart: CartData; slugs: Record<string
         {cart.lines.map((line) => {
           const href = slugs[line.handle] ? `/shop/product/${slugs[line.handle]}` : "/shop";
           return (
-            <li key={line.id} className="py-5 flex gap-4">
+            <li key={line.id} className="py-5 flex gap-3 sm:gap-4">
               <Link href={href} className="h-24 w-20 shrink-0 bg-white border border-line grid place-items-center">
                 {line.image ? (
                   <img src={shopImage(line.image, 200) || line.image} alt={line.imageAlt || line.title} className="h-full w-full object-contain p-1" />
@@ -67,20 +67,20 @@ export function CartView({ cart, slugs }: { cart: CartData; slugs: Record<string
                           run(line.id, () => updateCartLine(line.id, quantity));
                         }
                       }}
-                      className="ml-2 h-9 w-16 px-2 border border-line bg-white"
+                      className="ml-2 h-11 w-16 px-2 border border-line bg-white"
                     />
                   </label>
                   <button
                     type="button"
                     disabled={pending === line.id}
                     onClick={() => run(line.id, () => removeCartLine(line.id))}
-                    className="text-sm underline text-ink-soft hover:text-navy"
+                    className="inline-flex items-center min-h-11 px-1 text-sm underline text-ink-soft hover:text-navy"
                   >
                     Remove
                   </button>
                 </div>
               </div>
-              <p className="font-semibold text-navy">{formatMoney(line.lineTotal, line.currency)}</p>
+              <p className="font-semibold text-navy shrink-0">{formatMoney(line.lineTotal, line.currency)}</p>
             </li>
           );
         })}

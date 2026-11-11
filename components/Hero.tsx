@@ -42,9 +42,9 @@ export async function Hero() {
             Shop Aces Softball, Mountainside FC, RN Threadz, and St. Teresa of Avila from one site. Custom pieces live here too. Decoration on blanks is still quoted the same way.
           </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-            <Link href="/#stores" className="inline-flex items-center justify-center h-14 px-8 whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors">Shop team stores</Link>
-            <Link href="/quote" className="font-display font-semibold text-navy underline underline-offset-4 decoration-thread/50 hover:decoration-thread">Request a quote</Link>
+          <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <Link href="/#stores" className="inline-flex items-center justify-center h-14 px-8 w-full sm:w-auto whitespace-nowrap bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors">Shop team stores</Link>
+            <Link href="/quote" className="inline-flex items-center min-h-11 font-display font-semibold text-navy underline underline-offset-4 decoration-thread/50 hover:decoration-thread">Request a quote</Link>
           </div>
 
           <ul className="mt-10 grid grid-cols-3 gap-4 max-w-md border-t border-navy/20 pt-6">
@@ -57,14 +57,14 @@ export async function Hero() {
         <ul className="bg-navy text-cloth divide-y divide-white/15 shadow-[0_24px_40px_-24px_rgba(11,37,69,0.55)]">
           {SHOP_STORES.map((store) => (
             <li key={store.handle}>
-              <Link href={`/shop/${store.handle}`} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-white/5">
-                <span>
+              <Link href={`/shop/${store.handle}`} className="flex items-center justify-between gap-3 px-4 sm:px-5 py-4 min-h-11 hover:bg-white/5">
+                <span className="min-w-0">
                   <span className="block font-display font-bold text-lg leading-tight">{store.name}</span>
                   <span className="block text-xs uppercase tracking-wider text-white/70 mt-1">
                     {counts ? `${counts[store.handle] ?? 0} products` : store.eyebrow}
                   </span>
                 </span>
-                <span className="font-display uppercase tracking-wider text-[11px] font-semibold text-thread-bright whitespace-nowrap">{store.status}</span>
+                <span className="font-display uppercase tracking-wider text-[11px] font-semibold text-thread-bright text-right shrink-0">{store.status}</span>
               </Link>
             </li>
           ))}

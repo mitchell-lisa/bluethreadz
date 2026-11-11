@@ -51,7 +51,7 @@ export default async function ProductPage({ params }: { params: Promise<{ handle
   return (
     <>
       <Header />
-      <main className="pb-14 sm:pb-0">
+      <main className="pb-24 sm:pb-0">
         <div className="mx-auto max-w-6xl px-5 pt-6 md:pt-8">
           <nav aria-label="Breadcrumb" className="text-sm text-ink-soft">
             <ol className="flex flex-wrap gap-x-2">

@@ -24,7 +24,7 @@ export function QuickQuote() {
       <form onSubmit={go} className="mx-auto max-w-6xl px-5 py-6 md:py-7 grid md:grid-cols-[auto_1fr_1fr_1fr_auto] items-end gap-3 md:gap-4">
         <div className="md:pr-4 md:self-center">
           <p className="font-display uppercase tracking-[0.2em] text-[11px] font-semibold text-thread-bright">Quick quote</p>
-          <p className="font-display font-bold text-xl leading-tight text-white whitespace-nowrap">Know what you need?</p>
+          <p className="font-display font-bold text-xl leading-tight text-white">Know what you need?</p>
         </div>
         <label className="block"><span className="block text-[11px] uppercase tracking-wider font-semibold text-white/70 mb-1">What</span>
           <select value={item} onChange={(e) => setItem(e.target.value)} className={field}>{ITEMS.map((i) => <option key={i}>{i}</option>)}</select></label>
@@ -32,7 +32,7 @@ export function QuickQuote() {
           <input type="number" min={1} value={qty} onChange={(e) => setQty(e.target.value)} className={field} /></label>
         <label className="block"><span className="block text-[11px] uppercase tracking-wider font-semibold text-white/70 mb-1">Method</span>
           <select value={method} onChange={(e) => setMethod(e.target.value)} className={field}>{METHODS.map((m) => <option key={m}>{m}</option>)}</select></label>
-        <button type="submit" className="h-12 px-6 whitespace-nowrap bg-thread-bright text-navy-deep font-display uppercase tracking-wider text-[13px] font-bold hover:bg-white transition-colors">Get my quote →</button>
+        <button type="submit" className="h-12 w-full md:w-auto px-6 bg-thread-bright text-navy-deep font-display uppercase tracking-wider text-[13px] font-bold hover:bg-white transition-colors">Get my quote →</button>
       </form>
     </section>
   );

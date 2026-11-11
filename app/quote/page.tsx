@@ -15,7 +15,7 @@ export default async function QuotePage({ searchParams }: { searchParams: Promis
   return (
     <>
       <Header />
-      <main className="pb-14 sm:pb-0">
+      <main className="pb-24 sm:pb-0">
         <Quote initialItem={item?.slice(0, 200)} initialMethod={method?.slice(0, 40)} initialQty={qty?.replace(/\D/g, "").slice(0, 6)} />
       </main>
       <Contact />

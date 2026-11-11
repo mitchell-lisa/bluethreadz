@@ -30,11 +30,11 @@ export default function ProductsPage() {
                     <img key={p.handle} src={img(p.image, 400)} alt="" loading="lazy" className="h-full w-full object-contain bg-white p-2" />
                   ))}
                 </div>
-                <div className="p-4 flex items-baseline justify-between gap-3">
-                  <h3 className="font-display font-bold uppercase text-xl leading-none tracking-tight text-navy group-hover:text-thread">
+                <div className="p-3 sm:p-4 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                  <h3 className="min-w-0 font-display font-bold uppercase text-base sm:text-xl leading-tight tracking-tight text-navy group-hover:text-thread">
                     {c.name}
                   </h3>
-                  <span className="text-sm text-ink-soft shrink-0">{c.count} styles</span>
+                  <span className="text-sm text-ink-soft sm:shrink-0">{c.count} styles</span>
                 </div>
               </Link>
             </li>

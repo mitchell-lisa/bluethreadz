@@ -59,12 +59,12 @@ export default async function ShopProductPage({ params }: { params: Promise<{ ha
   return (
     <>
       <Header />
-      <main className="pb-14 sm:pb-0">
+      <main className="pb-24 sm:pb-0">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         <div className="mx-auto max-w-6xl px-5 pt-6">
           <nav aria-label="Breadcrumb" className="text-sm text-ink-soft">
             <ol className="flex flex-wrap gap-x-2">
-              <li><Link href="/" className="hover:text-navy">Home</Link></li>
+              <li><Link href="/" className="inline-flex items-center min-h-11 hover:text-navy">Home</Link></li>
               <li className="flex gap-x-2"><span aria-hidden>/</span><Link href="/shop" className="hover:text-navy">Team stores</Link></li>
               {product.storeHandle && product.storeName && (
                 <li className="flex gap-x-2">

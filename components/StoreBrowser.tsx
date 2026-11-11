@@ -102,7 +102,7 @@ function FilterChip({ pressed, onClick, children }: { pressed: boolean; onClick:
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`h-9 px-3 border text-sm font-display uppercase tracking-wide ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"}`}
+      className={`min-h-11 px-3 border text-sm font-display uppercase tracking-wide ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"}`}
     >
       {children}
     </button>

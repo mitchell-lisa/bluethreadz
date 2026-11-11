@@ -170,7 +170,7 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
                         className={
                           color && swatch
                             ? `h-11 w-11 border bg-white bg-cover bg-center ${pressed ? "border-navy ring-2 ring-navy ring-offset-2" : "border-line"} disabled:opacity-40`
-                            : `${size ? "min-w-12 px-3" : "px-3"} h-10 border text-sm ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"} disabled:opacity-40 disabled:line-through`
+                            : `${size ? "min-w-11 px-3" : "px-3"} min-h-11 border text-sm ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"} disabled:opacity-40 disabled:line-through`
                         }
                         style={color && swatch ? { backgroundImage: `url(${shopImage(swatch, 90)})` } : undefined}
                       >
@@ -200,7 +200,7 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
           type="button"
           onClick={onAdd}
           disabled={pending || !variant?.available}
-          className="mt-8 inline-flex items-center justify-center h-14 px-8 bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors disabled:opacity-50"
+          className="mt-8 inline-flex items-center justify-center h-14 px-8 w-full sm:w-auto bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy transition-colors disabled:opacity-50"
         >
           {pending ? "Adding..." : variant?.available ? "Add to cart" : "Sold out"}
         </button>

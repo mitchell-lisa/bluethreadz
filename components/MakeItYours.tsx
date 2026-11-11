@@ -30,10 +30,10 @@ export async function MakeItYours() {
             BlueThreadz checks placement before it is produced.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link href={href} className="inline-flex items-center justify-center h-12 px-6 bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy">
+            <Link href={href} className="inline-flex items-center justify-center h-12 px-6 w-full sm:w-auto bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy">
               Customize a hoodie
             </Link>
-            <Link href={`/shop/${CUSTOM_STORE.handle}`} className="inline-flex items-center justify-center h-12 px-6 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold hover:bg-navy hover:text-cloth">
+            <Link href={`/shop/${CUSTOM_STORE.handle}`} className="inline-flex items-center justify-center h-12 px-6 w-full sm:w-auto border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold hover:bg-navy hover:text-cloth">
               All custom apparel
             </Link>
           </div>

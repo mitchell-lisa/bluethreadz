@@ -5,7 +5,7 @@ import { Logo } from "./Logo";
 export function Contact() {
   const b = business;
   return (
-    <section id="contact" className="scroll-mt-16 bg-navy-deep text-cloth">
+    <section id="contact" className="scroll-mt-32 bg-navy-deep text-cloth">
       <div className="mx-auto max-w-6xl px-5 py-16 md:py-20 grid md:grid-cols-12 gap-10">
         <div className="md:col-span-5">
           <Logo light className="h-7" />

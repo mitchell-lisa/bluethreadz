@@ -21,7 +21,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="pb-14 sm:pb-0">
+      <main className="pb-24 sm:pb-0">
         <Hero />
         <ShopByOrg />
         <MakeItYours />

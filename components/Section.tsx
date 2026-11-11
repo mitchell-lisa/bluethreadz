@@ -18,7 +18,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={`scroll-mt-16 py-16 md:py-24 ${dark ? "bg-navy text-cloth weave" : ""} ${className}`}
+      className={`scroll-mt-32 py-16 md:py-24 ${dark ? "bg-navy text-cloth weave" : ""} ${className}`}
     >
       <div className="mx-auto max-w-6xl px-5">
         {(eyebrow || title) && (

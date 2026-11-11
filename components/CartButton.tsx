@@ -32,7 +32,7 @@ export function CartButton() {
     <Link
       href="/cart"
       aria-label={label}
-      className="relative inline-flex items-center justify-center h-10 px-2.5 border border-line text-navy hover:border-navy shrink-0"
+      className="relative inline-flex items-center justify-center h-11 min-w-11 px-2.5 border border-line text-navy hover:border-navy shrink-0"
     >
       <BagIcon />
       <span className="ml-1.5 hidden lg:inline font-display uppercase tracking-wider text-[13px] font-semibold">Cart</span>
