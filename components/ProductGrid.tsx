@@ -30,26 +30,23 @@ export function ProductGrid({
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 mb-8">
-        <label className="flex-1 max-w-sm">
+      <div className="flex gap-2 mb-3">
+        <label className="flex-1 min-w-0">
           <span className="sr-only">Search {facetLabel}</span>
           <input
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder={`Search ${facetLabel.toLowerCase()} by name or style #`}
-            className="w-full h-11 px-4 bg-white border border-line focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20"
+            placeholder="Search"
+            className="w-full h-11 px-3 bg-white border border-line focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20"
           />
         </label>
-        <p className="font-display uppercase tracking-wider text-sm font-semibold text-navy/60">
-          {shown.length} of {items.length}
-        </p>
       </div>
 
-      {facets && facets.options.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+      {facets && facets.options.filter((f) => f.count >= 3).length > 1 && (
+        <div className="mb-4 -mx-5 px-5 flex gap-2 overflow-x-auto">
           <FacetChip label="All" active={active === null} onClick={() => setActive(null)} />
-          {facets.options.map((f) => (
+          {facets.options.filter((f) => f.count >= 3).map((f) => (
             <FacetChip
               key={f.slug}
               label={`${f.name} (${f.count})`}
@@ -61,13 +58,7 @@ export function ProductGrid({
       )}
 
       {shown.length === 0 ? (
-        <p className="py-16 text-center text-ink-soft">
-          Nothing matches. Try a different search, or{" "}
-          <Link href="/quote" className="underline text-navy">
-            ask us for it in a quote
-          </Link>
-          .
-        </p>
+        <p className="py-10 text-ink-soft">Nothing matches.</p>
       ) : (
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
           {shown.map((p) => (
@@ -87,7 +78,7 @@ function FacetChip({ label, active, onClick }: { label: string; active: boolean;
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`min-h-11 px-3 font-display uppercase tracking-wider text-sm font-semibold border transition-colors ${
+      className={`h-8 shrink-0 whitespace-nowrap px-3 font-display uppercase tracking-wider text-xs font-semibold border transition-colors ${
         active ? "bg-navy text-cloth border-navy" : "border-navy/25 text-navy hover:border-navy"
       }`}
     >

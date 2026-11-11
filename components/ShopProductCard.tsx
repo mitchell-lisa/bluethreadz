@@ -19,10 +19,7 @@ export function ShopProductCard({ product }: { product: ShopCard }) {
         )}
       </div>
       <div className="mt-3">
-        {product.vendor ? (
-          <p className="font-display uppercase tracking-[0.16em] text-[11px] font-semibold text-navy/60">{product.vendor}</p>
-        ) : null}
-        <p className="mt-1 font-display font-semibold text-navy leading-snug group-hover:text-thread">{product.title}</p>
+        <p className="font-display font-semibold text-navy leading-snug group-hover:text-thread">{product.title}</p>
         <p className="mt-1 text-sm text-ink-soft">{priceFrom(product.minPrice, product.maxPrice, product.currency)}</p>
       </div>
     </Link>

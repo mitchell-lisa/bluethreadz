@@ -29,16 +29,7 @@ export default async function StorePage({ params }: { params: Promise<{ handle: 
   const products = cardsForStore(index, store.handle);
 
   return (
-    <Shell
-      eyebrow={store.eyebrow}
-      title={store.name}
-      intro={`${products.length} product${products.length === 1 ? "" : "s"}. ${store.blurb}`}
-      crumbs={[
-        { href: "/", label: "Home" },
-        { href: "/shop", label: "Team stores" },
-        { href: `/shop/${store.handle}`, label: store.name },
-      ]}
-    >
+    <Shell title={store.name}>
       <StoreBrowser products={products} />
     </Shell>
   );

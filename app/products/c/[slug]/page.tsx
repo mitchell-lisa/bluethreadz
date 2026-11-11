@@ -32,16 +32,7 @@ export default async function CollectionPage({ params }: { params: Promise<{ slu
   const facets = [...brandCounts.values()].sort((a, b) => b.count - a.count);
 
   return (
-    <Shell
-      crumbs={[
-        { href: "/", label: "Home" },
-        { href: "/products", label: "Products" },
-        { href: `/products/c/${slug}`, label: c.name },
-      ]}
-      eyebrow="Category"
-      title={c.name}
-      intro={`${c.count} styles. Every one can be embroidered or printed with your logo. Pick a few and request a quote.`}
-    >
+    <Shell title={c.name}>
       <ProductGrid items={items.map(toCard)} facetLabel={c.name} facets={{ key: "brandSlug", options: facets }} />
     </Shell>
   );

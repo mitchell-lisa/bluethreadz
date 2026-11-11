@@ -8,7 +8,7 @@ export type MenuLink = { label: string; href: string; note?: string };
 export type MenuColumn = { title: string; links: MenuLink[]; footer?: MenuLink };
 export type Menu = { label: string; href: string; columns?: MenuColumn[]; viewAll?: string };
 
-const DESKTOP_LATER = new Set(["Who We Serve", "Featured", "FAQ", "Contact"]);
+const DESKTOP_LATER = new Set<string>();
 
 export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; phone: string | null; phoneDisplay: string | null }) {
   const [open, setOpen] = useState(false); // mobile drawer
@@ -122,7 +122,7 @@ export function HeaderClient({ menus, phone, phoneDisplay }: { menus: Menu[]; ph
           <ul className="px-5 py-3 pb-8">
             <li className="pb-3 grid gap-2 border-b border-line">
               <a href="/cart" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold text-lg">Cart</a>
-              <a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Request a Free Quote</a>
+              <a href="/quote" onClick={() => setOpen(false)} className="flex items-center justify-center h-12 bg-navy text-cloth font-display uppercase tracking-wider font-semibold text-lg">Quote</a>
             </li>
             {menus.map((m) => (
               <li key={m.label} className="border-b border-line last:border-0">

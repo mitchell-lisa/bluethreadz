@@ -89,9 +89,6 @@ export function CartView({ cart, slugs }: { cart: CartData; slugs: Record<string
       <aside className="border border-navy bg-white p-5">
         <p className="font-display uppercase tracking-[0.18em] text-xs font-semibold text-navy/60">Subtotal</p>
         <p className="mt-2 text-3xl font-semibold text-navy">{formatMoney(cart.subtotal, cart.currency)}</p>
-        <p className="mt-3 text-sm text-ink-soft">
-          Tax and shipping are calculated on the Shopify checkout page. Nothing is charged here.
-        </p>
         <a
           href={cart.checkoutUrl}
           className="mt-5 flex items-center justify-center h-12 px-6 bg-thread text-white font-display uppercase tracking-wider font-bold text-sm hover:bg-navy"

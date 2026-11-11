@@ -3,12 +3,10 @@ import { SHOP_STORES } from "@/lib/stores";
 import { cardsForStore, safeShopIndex } from "@/lib/shopify/catalog";
 import { shopImage } from "@/lib/shopify/format";
 
-export async function ShopTiles() {
+export async function ShopTiles({ bare = false }: { bare?: boolean }) {
   const index = await safeShopIndex();
 
-  return (
-    <section id="stores" className="scroll-mt-32 bg-white">
-      <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+  const grid = (
         <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-10 md:gap-8">
           {SHOP_STORES.map((store) => {
             const photo = index ? cardsForStore(index, store.handle).find((card) => card.image) : null;
@@ -37,7 +35,13 @@ export async function ShopTiles() {
             );
           })}
         </ul>
-      </div>
+  );
+
+  if (bare) return grid;
+
+  return (
+    <section id="stores" className="scroll-mt-32 bg-white">
+      <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">{grid}</div>
     </section>
   );
 }

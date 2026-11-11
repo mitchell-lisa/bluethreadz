@@ -24,16 +24,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
   const items = productsByBrand(slug);
 
   return (
-    <Shell
-      crumbs={[
-        { href: "/", label: "Home" },
-        { href: "/products", label: "Products" },
-        { href: `/products/b/${slug}`, label: b.name },
-      ]}
-      eyebrow="Brand"
-      title={b.name}
-      intro={`${b.count} ${b.name} styles we can decorate with your logo.`}
-    >
+    <Shell title={b.name}>
       <ProductGrid items={items.map(toCard)} facetLabel={b.name} />
     </Shell>
   );

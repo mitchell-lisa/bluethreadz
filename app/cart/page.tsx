@@ -21,12 +21,7 @@ export default async function CartPage() {
   }
 
   return (
-    <Shell
-      eyebrow="Checkout continues on Shopify"
-      title="Your cart"
-      intro="Payment, tax, and shipping are completed on the Shopify checkout page."
-      crumbs={[{ href: "/", label: "Home" }, { href: "/cart", label: "Cart" }]}
-    >
+    <Shell title="Cart">
       {cart ? (
         <CartView cart={cart} slugs={slugs} />
       ) : (

@@ -130,19 +130,10 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
       </div>
 
       <div>
-        {product.vendor ? (
-          <p className="font-display uppercase tracking-[0.18em] text-xs font-semibold text-thread">{product.vendor}</p>
-        ) : null}
-        <h1 className="mt-2 font-display font-bold leading-[0.95] text-4xl md:text-5xl tracking-tight text-ink">{product.title}</h1>
-        <p className="mt-4 text-2xl font-semibold text-navy">{price}</p>
-        {product.storeName ? (
-          <p className="mt-2 text-sm text-ink-soft">
-            Sold in{" "}
-            <Link href={`/shop/${product.storeHandle}`} className="underline hover:text-navy">{product.storeName}</Link>
-          </p>
-        ) : null}
+        <h1 className="font-display font-bold leading-[1.05] text-3xl md:text-4xl tracking-tight text-ink">{product.title}</h1>
+        <p className="mt-3 text-2xl font-semibold text-navy">{price}</p>
 
-        <div className="mt-8 grid gap-6">
+        <div className="mt-6 grid gap-5">
           {options.map((option) => {
             const color = /colou?r/i.test(option.name);
             const size = /size/i.test(option.name);
@@ -212,10 +203,6 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
           </p>
         )}
         {message && <p className="mt-4 text-ink-soft">{message}</p>}
-
-        <p className="mt-6 text-sm text-ink-soft max-w-md">
-          Checkout, tax, and shipping are handled by Shopify. Made to order pieces typically take 7 to 10 business days to produce, plus delivery.
-        </p>
       </div>
     </div>
   );

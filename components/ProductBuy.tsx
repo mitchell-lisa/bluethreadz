@@ -16,6 +16,7 @@ export function ProductBuy({ p, quoteHref }: { p: Product; quoteHref: string }) 
   const [color, setColor] = useState<string | null>(colors[0] ?? null);
   const [size, setSize] = useState<string | null>(sizes.length === 1 ? sizes[0] : null);
   const [qty, setQty] = useState(1);
+  const [details, setDetails] = useState(false);
 
   const variant = useMemo(
     () => p.variants.find((v) => (color == null || v[1] === color) && (size == null || v[2] === size)) ?? null,
@@ -38,12 +39,8 @@ export function ProductBuy({ p, quoteHref }: { p: Product; quoteHref: string }) 
 
       {/* Buy box */}
       <div className="lg:col-span-5">
-        <Link href={`/products/b/${p.brandSlug}`} className="font-display uppercase tracking-[0.2em] text-sm font-semibold text-thread hover:text-navy">{p.vendor}</Link>
-        <h1 className="mt-2 font-display font-bold leading-[1.02] text-3xl md:text-5xl tracking-tight text-navy">{p.title}</h1>
-        <div className="mt-3 flex flex-wrap items-baseline gap-x-5 gap-y-1">
-          <p className="text-2xl font-semibold text-ink">{variant ? money(variant[3]) : p.minPrice != null ? `from ${money(p.minPrice)}` : ""}</p>
-          {p.style && <p className="text-sm text-ink-soft">Style {p.style}</p>}
-        </div>
+        <h1 className="font-display font-bold leading-[1.05] text-3xl md:text-4xl tracking-tight text-navy">{p.title}</h1>
+        <p className="mt-3 text-2xl font-semibold text-ink">{variant ? money(variant[3]) : p.minPrice != null ? `from ${money(p.minPrice)}` : ""}</p>
 
         {colors.length > 0 && (
           <div className="mt-6">
@@ -98,22 +95,25 @@ export function ProductBuy({ p, quoteHref }: { p: Product; quoteHref: string }) 
             {needsSize ? "Select a size" : variant && !variant[4] ? "Sold out" : "Add to cart"}
           </a>
         </div>
-        <p className="mt-2 text-xs text-ink-soft">Checkout happens on our secure online store. Want your logo on it? Use the quote button below.</p>
-
-        <Link href={quoteHref} className="mt-4 inline-flex w-full items-center justify-center h-12 px-6 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold hover:bg-navy hover:text-white transition-colors">
-          Get a quote with your logo
+        <Link href={quoteHref} className="mt-3 inline-flex w-full items-center justify-center h-12 px-6 border-2 border-navy text-navy font-display uppercase tracking-wider font-semibold hover:bg-navy hover:text-white transition-colors">
+          Quote with your logo
         </Link>
 
-        {p.intro && <p className="mt-8 text-[17px] leading-relaxed text-ink">{p.intro}</p>}
-
-        {p.features.length > 0 && (
+        {(p.intro || p.features.length > 0) && (
           <div className="mt-6">
-            <p className="font-display uppercase tracking-wider text-xs font-semibold text-navy/70 mb-2">Details</p>
-            <ul className="space-y-1.5 text-[15px] text-ink leading-snug">
-              {p.features.map((f) => (
-                <li key={f} className="pl-4 relative before:absolute before:left-0 before:top-[0.6em] before:h-1.5 before:w-1.5 before:bg-thread">{f}</li>
-              ))}
-            </ul>
+            <button type="button" aria-expanded={details} onClick={() => setDetails((v) => !v)} className="min-h-11 font-display uppercase tracking-wider text-sm font-semibold text-navy">
+              {details ? "Hide details" : "Details"}
+            </button>
+            {details && (
+              <div className="mt-2 text-ink-soft">
+                {p.intro ? <p>{p.intro}</p> : null}
+                {p.features.length > 0 && (
+                  <ul className="mt-2 list-disc pl-5 space-y-1">
+                    {p.features.map((f) => <li key={f}>{f}</li>)}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

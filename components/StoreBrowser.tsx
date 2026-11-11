@@ -6,8 +6,8 @@ import type { ShopCard } from "@/lib/shopify/types";
 
 const SORTS = [
   { id: "title", label: "Name" },
-  { id: "price-asc", label: "Price, low to high" },
-  { id: "price-desc", label: "Price, high to low" },
+  { id: "price-asc", label: "Price up" },
+  { id: "price-desc", label: "Price down" },
 ] as const;
 
 type SortId = (typeof SORTS)[number]["id"];
@@ -25,6 +25,12 @@ export function StoreBrowser({ products }: { products: ShopCard[] }) {
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   }, [products]);
+
+  const showChips = useMemo(() => {
+    const real = types.filter(([, count]) => count >= 3);
+    const top = real[0]?.[1] ?? 0;
+    return real.length >= 2 && top < products.length * 0.85;
+  }, [types, products.length]);
 
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -44,38 +50,35 @@ export function StoreBrowser({ products }: { products: ShopCard[] }) {
 
   return (
     <div>
-      <div className="flex flex-col lg:flex-row lg:items-end gap-4 mb-8">
-        <label className="flex-1 max-w-sm">
+      <div className="flex gap-2 mb-3">
+        <label className="flex-1 min-w-0">
           <span className="sr-only">Search this store</span>
           <input
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search this store"
+            placeholder="Search"
             className="w-full h-11 px-3 border border-line bg-white text-ink"
           />
         </label>
-        <label className="text-sm text-ink-soft">
+        <label className="shrink-0">
           <span className="sr-only">Sort</span>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortId)}
-            className="h-11 px-3 border border-line bg-white text-ink"
+            className="h-11 px-2 border border-line bg-white text-ink"
           >
             {SORTS.map((s) => (
               <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
         </label>
-        <p className="text-sm text-ink-soft lg:ml-auto">
-          Showing {shown.length} of {products.length}
-        </p>
       </div>
 
-      {types.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+      {showChips && (
+        <div className="mb-4 -mx-5 px-5 flex gap-2 overflow-x-auto">
           <FilterChip pressed={type === "all"} onClick={() => setType("all")}>All</FilterChip>
-          {types.map(([name, count]) => (
+          {types.filter(([, count]) => count >= 3).map(([name, count]) => (
             <FilterChip key={name} pressed={type === name} onClick={() => setType(name)}>
               {name} ({count})
             </FilterChip>
@@ -84,7 +87,7 @@ export function StoreBrowser({ products }: { products: ShopCard[] }) {
       )}
 
       {shown.length === 0 ? (
-        <p className="text-ink-soft">Nothing in this store matches that search.</p>
+        <p className="text-ink-soft">Nothing matches.</p>
       ) : (
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
           {shown.map((p) => (
@@ -102,7 +105,7 @@ function FilterChip({ pressed, onClick, children }: { pressed: boolean; onClick:
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`min-h-11 px-3 border text-sm font-display uppercase tracking-wide ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"}`}
+      className={`h-8 shrink-0 whitespace-nowrap px-3 border text-xs font-display uppercase tracking-wide ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line hover:border-navy"}`}
     >
       {children}
     </button>

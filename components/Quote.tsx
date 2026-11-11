@@ -2,7 +2,6 @@
 
 import { FormEvent, useState } from "react";
 import { business } from "@/lib/business";
-import { Section } from "./Section";
 
 const inputCls =
   "w-full h-12 px-4 bg-white border border-line focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20 text-ink";
@@ -38,13 +37,10 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
   }
 
   return (
-    <Section
-      id="quote"
-      eyebrow="Free quote"
-      title="Tell us about your order"
-      intro="The more you can tell us, the faster we can price it. Don’t have artwork yet? That’s fine. Say so and we’ll help."
-    >
-      <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-5 max-w-3xl">
+    <div id="quote" className="mx-auto max-w-3xl px-5 py-6 md:py-12">
+      <h1 className="font-display font-bold text-3xl md:text-4xl tracking-tight text-navy">Free quote</h1>
+      <p className="mt-2 text-ink-soft">Tell us the garment, the count, and the artwork.</p>
+      <form onSubmit={onSubmit} className="mt-8 grid md:grid-cols-2 gap-5">
         <div>
           <label htmlFor="name" className={labelCls}>Your name</label>
           <input id="name" name="name" required autoComplete="name" className={inputCls} />
@@ -101,11 +97,6 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
           >
             Send Quote Request
           </button>
-          <p className="text-sm text-ink-soft">
-            {business.quoteTo
-              ? "This opens an email to us with your details filled in. Attach your artwork before sending."
-              : "You can also reach us by DM on Instagram."}
-          </p>
         </div>
         {status === "sent" && (
           <p role="status" className="md:col-span-2 border-l-4 border-thread pl-4 py-2 text-navy">
@@ -123,6 +114,6 @@ export function Quote({ initialItem, initialMethod, initialQty }: { initialItem?
           </p>
         )}
       </form>
-    </Section>
+    </div>
   );
 }
