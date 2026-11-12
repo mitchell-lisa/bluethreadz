@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { removeCartLine, updateCartLine } from "@/lib/shopify/actions";
-import { formatMoney, shopImage } from "@/lib/shopify/format";
+import { displayTitle, formatMoney, shopImage } from "@/lib/shopify/format";
 import type { CartView as CartData } from "@/lib/shopify/types";
 
 export function CartView({ cart, slugs }: { cart: CartData; slugs: Record<string, string> }) {
@@ -44,13 +44,22 @@ export function CartView({ cart, slugs }: { cart: CartData; slugs: Record<string
             <li key={line.id} className="py-5 flex gap-3 sm:gap-4">
               <Link href={href} className="h-24 w-20 shrink-0 bg-white border border-line grid place-items-center">
                 {line.image ? (
-                  <img src={shopImage(line.image, 200) || line.image} alt={line.imageAlt || line.title} className="h-full w-full object-contain p-1" />
+                  <img src={shopImage(line.image, 200) || line.image} alt={line.imageAlt || displayTitle(line.title)} className="h-full w-full object-contain p-1" />
                 ) : null}
               </Link>
               <div className="flex-1 min-w-0">
-                <Link href={href} className="font-display font-semibold text-navy hover:text-thread">{line.title}</Link>
+                <Link href={href} className="font-display font-semibold text-navy hover:text-thread">{displayTitle(line.title)}</Link>
                 {line.options.length > 0 && (
                   <p className="text-sm text-ink-soft mt-1">{line.options.map((o) => `${o.name}: ${o.value}`).join(" · ")}</p>
+                )}
+                {line.attributes.length > 0 && (
+                  <ul className="mt-1 text-sm text-ink-soft">
+                    {line.attributes.map((attribute) => (
+                      <li key={attribute.key}>
+                        {attribute.key}: {attribute.value}
+                      </li>
+                    ))}
+                  </ul>
                 )}
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <label className="text-sm text-ink-soft">

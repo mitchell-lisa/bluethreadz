@@ -8,7 +8,7 @@ import { ShopBuyBox } from "@/components/ShopBuyBox";
 import { Details } from "@/components/Details";
 import { business } from "@/lib/business";
 import { cardBySlug, getShopIndex, getShopProduct } from "@/lib/shopify/catalog";
-import { sanitizeHtml } from "@/lib/shopify/format";
+import { displayTitle, sanitizeHtml } from "@/lib/shopify/format";
 
 export const revalidate = 3600;
 
@@ -19,8 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   if (!card) return {};
   const product = await getShopProduct(card.handle);
   if (!product) return {};
-  const title = `${product.title} | BlueThreadz`;
-  const description = (product.description || `${product.title} from ${product.storeName || "BlueThreadz"}.`).slice(0, 180);
+  const name = displayTitle(product.title);
+  const title = `${name} | BlueThreadz`;
+  const description = (product.description || `${name} from ${product.storeName || "BlueThreadz"}.`).slice(0, 180);
   const image = product.images[0]?.url;
   return { title, description, openGraph: { title, description, images: image ? [{ url: image }] : undefined } };
 }
@@ -36,7 +37,7 @@ export default async function ShopProductPage({ params }: { params: Promise<{ ha
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: product.title,
+    name: displayTitle(product.title),
     image: product.images.map((i) => i.url),
     description: product.description,
     brand: product.vendor ? { "@type": "Brand", name: product.vendor } : undefined,

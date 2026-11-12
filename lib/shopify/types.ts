@@ -58,6 +58,7 @@ export type CartLine = {
   handle: string;
   variantTitle: string;
   options: { name: string; value: string }[];
+  attributes: { key: string; value: string }[];
   image: string | null;
   imageAlt: string | null;
   lineTotal: string;

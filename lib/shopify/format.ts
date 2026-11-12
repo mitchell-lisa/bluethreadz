@@ -1,3 +1,14 @@
+const PAL_PREFIX = /^\(PAL Logo\)\s*/i;
+
+export function isPalTitle(title: string) {
+  return PAL_PREFIX.test(title.trim());
+}
+
+/** Shoppers see PAL products without the "(PAL Logo)" prefix. */
+export function displayTitle(title: string) {
+  return title.trim().replace(PAL_PREFIX, "").replace(/\s+/g, " ").trim();
+}
+
 export function shopImage(url: string | null | undefined, width: number) {
   if (!url) return null;
   const sep = url.includes("?") ? "&" : "?";

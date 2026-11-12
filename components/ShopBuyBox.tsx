@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { lineAttributes, personalizationFor } from "@/lib/personalization";
 import { addToCart } from "@/lib/shopify/actions";
-import { formatMoney, shopImage } from "@/lib/shopify/format";
+import { displayTitle, formatMoney, shopImage } from "@/lib/shopify/format";
 import type { ShopProduct, ShopVariant } from "@/lib/shopify/types";
 
 function isDefaultOption(option: { name: string; values: string[] }) {
@@ -32,6 +33,11 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
+  const [gateOn, setGateOn] = useState(false);
+  const [personal, setPersonal] = useState<Record<string, string>>({});
+  const schema = useMemo(() => personalizationFor(product.title), [product.title]);
+  const showPersonal = Boolean(schema && (!schema.gate || gateOn));
+  const title = displayTitle(product.title);
 
   const variant = useMemo(
     () => product.variants.find((v) => matches(v, selection)) ?? null,
@@ -82,9 +88,15 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
 
   async function onAdd() {
     if (!variant || !variant.available) return;
+    const personalization = schema ? lineAttributes(schema, gateOn, personal) : { attributes: [] };
+    if ("error" in personalization) {
+      setAdded(false);
+      setMessage(personalization.error);
+      return;
+    }
     setPending(true);
     setMessage(null);
-    const result = await addToCart(variant.id, qty);
+    const result = await addToCart(variant.id, qty, personalization.attributes);
     setPending(false);
     if ("error" in result) {
       setAdded(false);
@@ -104,7 +116,7 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
           {activeShot ? (
             <img
               src={shopImage(activeShot.url, 1200) || activeShot.url}
-              alt={activeShot.alt || product.title}
+              alt={activeShot.alt || title}
               className="h-full w-full object-contain p-4"
             />
           ) : (
@@ -130,7 +142,7 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
       </div>
 
       <div>
-        <h1 className="font-display font-bold leading-[1.05] text-3xl md:text-4xl tracking-tight text-ink">{product.title}</h1>
+        <h1 className="font-display font-bold leading-[1.05] text-3xl md:text-4xl tracking-tight text-ink">{title}</h1>
         <p className="mt-3 text-2xl font-semibold text-navy">{price}</p>
 
         <div className="mt-6 grid gap-5">
@@ -173,6 +185,67 @@ export function ShopBuyBox({ product }: { product: ShopProduct }) {
               </fieldset>
             );
           })}
+
+          {schema?.gate && (
+            <label className="flex items-center gap-3 min-h-11">
+              <input
+                type="checkbox"
+                checked={gateOn}
+                onChange={(e) => {
+                  setGateOn(e.target.checked);
+                  setAdded(false);
+                  setMessage(null);
+                }}
+                className="h-5 w-5 accent-navy"
+              />
+              <span className="text-navy">{schema.gate.label}</span>
+            </label>
+          )}
+
+          {showPersonal &&
+            schema?.fields.map((field) =>
+              field.kind === "choice" ? (
+                <fieldset key={field.name} className="grid gap-2">
+                  <legend className="font-display uppercase tracking-[0.16em] text-xs font-semibold text-navy/70">{field.label}</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {field.choices?.map((choice) => {
+                      const pressed = personal[field.name] === choice.value;
+                      return (
+                        <button
+                          key={choice.value}
+                          type="button"
+                          aria-pressed={pressed}
+                          onClick={() => {
+                            setPersonal((current) => ({ ...current, [field.name]: choice.value }));
+                            setAdded(false);
+                            setMessage(null);
+                          }}
+                          className={`inline-flex items-center gap-2 min-h-11 px-3 border text-sm ${pressed ? "bg-navy text-cloth border-navy" : "bg-white text-navy border-line"}`}
+                        >
+                          <span className="h-4 w-4 rounded-full border border-black/20" style={{ background: choice.color }} />
+                          {choice.value}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              ) : (
+                <label key={field.name} className="grid gap-2">
+                  <span className="font-display uppercase tracking-[0.16em] text-xs font-semibold text-navy/70">{field.label}</span>
+                  <input
+                    type="text"
+                    value={personal[field.name] ?? ""}
+                    maxLength={field.maxLength}
+                    onChange={(e) => {
+                      setPersonal((current) => ({ ...current, [field.name]: e.target.value }));
+                      setAdded(false);
+                      setMessage(null);
+                    }}
+                    className="h-11 px-3 border border-line bg-white"
+                  />
+                </label>
+              ),
+            )}
 
           <label className="grid gap-2 max-w-[8rem]">
             <span className="font-display uppercase tracking-[0.16em] text-xs font-semibold text-navy/70">Quantity</span>

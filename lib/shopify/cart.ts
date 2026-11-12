@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { cleanAttributes, type LineAttribute } from "@/lib/personalization";
 import { storefront } from "./client";
 import type { CartLine, CartView } from "./types";
 
@@ -17,6 +18,7 @@ type RawCart = {
     nodes: {
       id: string;
       quantity: number;
+      attributes: { key: string; value: string }[];
       cost: { totalAmount: Money };
       merchandise: {
         title: string;
@@ -41,6 +43,7 @@ const CART_FIELDS = /* GraphQL */ `
       nodes {
         id
         quantity
+        attributes { key value }
         cost { totalAmount { amount currencyCode } }
         merchandise {
           ... on ProductVariant {
@@ -83,6 +86,7 @@ function toView(cart: RawCart): CartView {
         handle: line.merchandise!.product.handle,
         variantTitle: line.merchandise!.title,
         options: line.merchandise!.selectedOptions.filter((o) => o.name !== "Title"),
+        attributes: (line.attributes ?? []).filter((attribute) => attribute.key && attribute.value),
         image: line.merchandise!.image?.url ?? null,
         imageAlt: line.merchandise!.image?.altText ?? null,
         lineTotal: line.cost.totalAmount.amount,
@@ -139,28 +143,38 @@ function clampQty(quantity: number) {
   return Math.max(1, Math.min(99, n));
 }
 
-export async function createCart(variantId: string, quantity: number) {
+function lineInput(variantId: string, quantity: number, attributes?: LineAttribute[]) {
+  const line: { merchandiseId: string; quantity: number; attributes?: LineAttribute[] } = {
+    merchandiseId: variantId,
+    quantity: clampQty(quantity),
+  };
+  const clean = cleanAttributes(attributes);
+  if (clean.length) line.attributes = clean;
+  return line;
+}
+
+export async function createCart(variantId: string, quantity: number, attributes?: LineAttribute[]) {
   const data = await storefront<{
     cartCreate: { cart: RawCart | null; userErrors: { message: string }[] };
   }>(
     `mutation CartCreate($input: CartInput!) {
       cartCreate(input: $input) { cart { ...CartFields } userErrors { message } }
     } ${CART_FIELDS}`,
-    { input: { lines: [{ merchandiseId: variantId, quantity: clampQty(quantity) }] } },
+    { input: { lines: [lineInput(variantId, quantity, attributes)] } },
   );
   const err = data.cartCreate.userErrors[0]?.message;
   if (err || !data.cartCreate.cart) throw new Error(err || "Could not create the cart.");
   return toView(data.cartCreate.cart);
 }
 
-export async function addLines(cartId: string, variantId: string, quantity: number) {
+export async function addLines(cartId: string, variantId: string, quantity: number, attributes?: LineAttribute[]) {
   const data = await storefront<{
     cartLinesAdd: { cart: RawCart | null; userErrors: { message: string }[] };
   }>(
     `mutation CartAdd($cartId: ID!, $lines: [CartLineInput!]!) {
       cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ...CartFields } userErrors { message } }
     } ${CART_FIELDS}`,
-    { cartId, lines: [{ merchandiseId: variantId, quantity: clampQty(quantity) }] },
+    { cartId, lines: [lineInput(variantId, quantity, attributes)] },
   );
   const err = data.cartLinesAdd.userErrors[0]?.message;
   if (err || !data.cartLinesAdd.cart) throw new Error(err || "Could not add that item.");

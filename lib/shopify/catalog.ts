@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
-import { CUSTOM_STORE, storeByHandle, TEAM_HANDLES, TEAM_STORES } from "@/lib/stores";
+import { isPalTitle } from "@/lib/shopify/format";
+import { CUSTOM_STORE, PAL_HANDLE, storeByHandle, TEAM_HANDLES, TEAM_STORES } from "@/lib/stores";
 import { storefront } from "./client";
 import type { ShopCard, ShopIndex, ShopProduct, ShopVariant } from "./types";
 
@@ -138,6 +139,10 @@ async function loadIndex(): Promise<ShopIndex> {
 
   nodes.forEach((node, i) => {
     const slug = cards[i].slug;
+    if (isPalTitle(node.title)) {
+      byStore[PAL_HANDLE].push(slug);
+      return;
+    }
     const membership = node.collections.nodes.map((c) => c.handle).filter((h) => TEAM_HANDLES.has(h));
     if (membership.length === 0) custom.push(slug);
     for (const handle of membership) byStore[handle].push(slug);
@@ -146,7 +151,7 @@ async function loadIndex(): Promise<ShopIndex> {
   return { cards, bySlug, byStore, custom };
 }
 
-export const getShopIndex = unstable_cache(loadIndex, ["shop-index-v3"], { revalidate: 3600 });
+export const getShopIndex = unstable_cache(loadIndex, ["shop-index-v4"], { revalidate: 3600 });
 
 export async function safeShopIndex() {
   try {
@@ -266,7 +271,7 @@ async function loadProduct(handle: string): Promise<ShopProduct | null> {
 
 export const getShopProduct = unstable_cache(
   async (handle: string) => loadProduct(handle),
-  ["shop-product-v3"],
+  ["shop-product-v4"],
   { revalidate: 3600 },
 );
 

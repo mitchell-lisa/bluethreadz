@@ -1,6 +1,8 @@
 /**
- * The four organization shops in the merged Shopify store, plus BlueThreadz
- * custom apparel (products that are not in any of those four collections).
+ * Organization shops in the merged Shopify store, plus BlueThreadz custom
+ * apparel (products that are not in any of those collections).
+ * Mountainside PAL is not a Shopify collection. Products whose titles start
+ * with "(PAL Logo)" are grouped into it in site code.
  * Leftover collections `aces-softball` and `mountainside-fc` are not shops.
  */
 
@@ -34,6 +36,15 @@ export const TEAM_STORES: StoreDef[] = [
     band: "#0d6b45",
   },
   {
+    handle: "mountainside-pal",
+    name: "Mountainside PAL",
+    short: "PAL",
+    eyebrow: "PAL shop",
+    blurb: "Mountainside PAL gear.",
+    status: "Shop now",
+    band: "#146c43",
+  },
+  {
     handle: "st-teresa-of-avila-school-store",
     name: "St. Teresa of Avila",
     short: "School",
@@ -65,7 +76,10 @@ export const CUSTOM_STORE: StoreDef = {
 
 export const SHOP_STORES: StoreDef[] = [...TEAM_STORES, CUSTOM_STORE];
 
-export const TEAM_HANDLES = new Set(TEAM_STORES.map((s) => s.handle));
+/** Shopify collection handles. Mountainside PAL is grouped by title, not a collection. */
+export const PAL_HANDLE = "mountainside-pal";
+
+export const TEAM_HANDLES = new Set(TEAM_STORES.map((s) => s.handle).filter((handle) => handle !== PAL_HANDLE));
 
 /** The Nike Club Fleece hoodie sold as a decoration package. */
 export const CUSTOM_HOODIE_HANDLE = "bluethreadz-custom-nike-hoodie-adult";
